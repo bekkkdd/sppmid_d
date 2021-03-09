@@ -2,182 +2,134 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorator="layouts/main.html">
-    <div layout:fragment="content">
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h3 class="m-0 text-dark"><small>План мероприятий</small></h3>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
-                            <li class="breadcrumb-item active">План мероприятий</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><span th:text = "${user.lastName}"></span></h5>
-                                <h5><span th:text = "${user.firstName}"></span></h5>
-                                <h5><span th:text = "${user.middleName}"></span></h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text mt-3">
-                                    <a th:href = "@{'/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>План мероприятий</h5>
-                            </div>
-                            <div class="card-body">
-                                <a th:href = "@{'/createprocess'}" class="btn btn-flat btn-success btn-sm">
-                                    + Создать процесс
-                                </a>
-                                <br>
-                                <br>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="3">
-                                                Организация
-                                            </th>
-                                            <th>
-                                                Дата запуска
-                                            </th>
-                                            <th>
-                                                Состояние процесса
-                                            </th>
-                                            <th>
-                                                Пользователь
-                                            </th>
-                                            <th>
-                                                Статус
-                                            </th>
-                                            <th>
-                                                Просмотр
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <form th:action = "@{'/combineprocess'}" method="post" id = "process_list_form_id">
-                                            <tr th:each="proc: ${processList}">
-                                                <td style="width: 2%;">
-                                                    <input type="checkbox" style="width: 20px; height: 20px; margin-top:3px;" th:name="'process_'+${proc.id}" th:value="${proc.id}" onclick="checkCombineButton()" class="check-box" th:id = "'process_'+${proc.id}">
-                                                    <input type="hidden" th:id = "'isCombined_'+${proc.id}" th:value = "${proc.isCombined}">
-                                                    <input type="hidden" th:id = "'status_'+${proc.id}" th:value = "${proc.status}">
-                                                    <input type="hidden" th:id = "'stage_'+${proc.id}" th:value = "${proc.stage}">
-                                                    <input type="hidden" th:id = "'gosOrgan_'+${proc.id}" th:value = "${proc.gosOrganization.id}">
-                                                    <input type="hidden" th:id = "'isCombined_'+${proc.id}" th:value = "${proc.isCombined}">
-                                                    <input type="hidden" th:id = "'isUncombinable_'+${proc.id}" th:value = "${proc.isUncombinable}">
-                                                </td>
-                                                <td style="width: 2%;" th:text = "${proc.id}">
-                                                </td>
-                                                <td th:text = "${proc.gosOrganization.name}">
-                                                </td>
-                                                <td th:text = "${proc.createdAt}">
-                                                </td>
-                                                <td th:text = "${proc.stageName}">
-                                                </td>
-                                                <td th:text = "${proc.stageRole}">
-                                                </td>
-                                                <td th:text = "${proc.statusText}">
-                                                </td>
-                                                <td>
-                                                    <a th:href="@{'/processdetails/' + ${proc.id}}" class="btn btn-info btn-sm">Детали</a></td>
-                                                </td>
-                                            </tr>
-                                            <input type="hidden" name="uncombine_process_id" id="uncombine_process_id">
-                                        </form>
-                                    </tbody>
-                                </table>
-                                <br>
-                                <button class="btn btn-success btn-flat btn-sm" type="button" onclick="toCombine()" id = "combine_button_id" style="display: none;">+ Объединить</button>
-                                <button class="btn btn-danger btn-flat btn-sm" type="button" onclick="toUncombine()" id = "un_combine_button_id" style="display: none;">- Разъеденить</button>
-                                <script type="text/javascript">
-
-                                    unCombineProcessId = 0;
-
-                                    function checkCombineButton() {
-                                        checkBoxes = document.getElementsByClassName("check-box");
-                                        showButton = true;
-                                        isFirst = true;
-                                        status = 0;
-                                        stage = 0;
-                                        gosOrgan = 0;
-                                        countChecked = 0;
-
-                                        document.getElementById("un_combine_button_id").style.display = "none";
-
-                                        for(i=0;i<checkBoxes.length;i++){
-                                            if(checkBoxes[i].checked){
-                                                countChecked++;
-                                                if(countChecked==1){
-                                                    if(document.getElementById("isCombined_"+checkBoxes[i].value).value == 1 && document.getElementById("isUncombinable_"+checkBoxes[i].value).value == 1){
-                                                        document.getElementById("un_combine_button_id").style.display = "block";
-                                                        unCombineProcessId = checkBoxes[i].value;
-                                                    }
-                                                }else{
-                                                    document.getElementById("un_combine_button_id").style.display = "none";
-                                                }
-
-                                                if(isFirst){
-
-                                                    status = document.getElementById("status_"+checkBoxes[i].value).value;
-                                                    stage = document.getElementById("stage_"+checkBoxes[i].value).value;
-                                                    gosOrgan = document.getElementById("gosOrgan_"+checkBoxes[i].value).value;
-                                                    isFirst = false;
-
-                                                }else{
-
-                                                    if(status!=document.getElementById("status_"+checkBoxes[i].value).value||stage!=document.getElementById("stage_"+checkBoxes[i].value).value||gosOrgan!=document.getElementById("gosOrgan_"+checkBoxes[i].value).value){
-                                                        showButton = false;
-                                                        break;
-                                                    }
-
-                                                }
-                                            }
-                                        }
-                                        if(showButton&&countChecked>1){
-                                            document.getElementById("combine_button_id").style.display = "block";
-                                        }else{
-                                            document.getElementById("combine_button_id").style.display = "none";
-                                        }
-                                    }
-                                    function toCombine(){
-                                        if(confirm("Объединить выбранные процессы?")){
-                                            document.getElementById("process_list_form_id").submit();
-                                        }
-                                    }
-
-                                    function toUncombine(){
-                                        if(confirm("Разъединить выбранный процесс?")){
-                                            document.getElementById("process_list_form_id").action = "/uncombineprocess";
-                                            document.getElementById("uncombine_process_id").value = unCombineProcessId;
-                                            document.getElementById("process_list_form_id").submit();
-                                        }
-                                    }
-                                </script>
-                            </div>
-                            <div class="card-footer clearfix">
-                                <th:block th:each = "id : ${#numbers.sequence(1, pageCount)}">
-                                    <a class="btn btn-info btn-sm btn-flat" th:classappend="${id}==${#request.getParameter('page')} ? 'active': '' " th:href="@{/processlist(page=${id})}" th:text = "${id}"></a>
-                                </th:block>
-                            </div>
-                        </div>
+<div layout:fragment="content">
+    <div class="container">
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="#" class="header-link breadcrumb-item-link">Главная</a>
+            </li>
+            <li class="breadcrumb-item active">
+                <p>План мероприятий</p>
+            </li>
+        </ul>
+        <div class="filter">
+            <form class="filter-form" action="#" method="GET">
+                <div class="input-group">
+                    <label for="organization">Организация</label>
+                    <div class="select-wrapper">
+                        <select id="organization" name="organization">
+                            <option selected disabled>Все</option>
+                            <option>Организация</option>
+                        </select>
                     </div>
                 </div>
+
+                <div class="input-group">
+                    <label for="start-data">Дата запуска (начало)</label>
+                    <input type="date" id="start-data" name="start-data" />
+                </div>
+
+                <div class="input-group">
+                    <label for="end-data">Дата запуска (конец)</label>
+                    <input type="date" id="end-data" name="end-data" />
+                </div>
+
+                <div class="input-group">
+                    <label for="process-state">Состояние процесса</label>
+                    <div class="select-wrapper">
+                        <select id="process-state" name="process-state">
+                            <option selected disabled>Все</option>
+                            <option>Состояние процесса</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="user">Пользователь</label>
+                    <div class="select-wrapper">
+                        <select id="user" name="user">
+                            <option selected disabled>Все</option>
+                            <option>Пользователь</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="status">Статус</label>
+                    <div class="select-wrapper">
+                        <select id="status" name="status">
+                            <option selected disabled>Любой</option>
+                            <option>Статус</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-multiple-group">
+                    <label for="year1">Годы</label>
+                    <div class="input-multiple-group-wrapper">
+                        <input type="text" name="year1" id="year1" placeholder="год 1" maxlength="4" size="4" />
+                        <input type="text" name="year2" id="year2" placeholder="год 2" maxlength="4" size="4" />
+                        <input type="text" name="year3" id="year3" placeholder="год 3" maxlength="4" size="4" />
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="limit-from">Лимит (от)</label>
+                    <input type="text" id="limit-from" name="limit-from" placeholder="Введите сумму" />
+                </div>
+
+                <div class="input-group">
+                    <label for="limit-to">Лимит (до)</label>
+                    <input type="text" id="limit-to" name="limit-to" placeholder="Введите сумму" />
+                </div>
+            </form>
+        </div>
+        <div class="caption">
+            <h1 class="caption-title">План мероприятий</h1>
+            <div class="btn-group">
+                <button class="btn outline">Объединить</button>
+                <a th:href="@{'/createprocess'}" class="link"><button class="btn primary">Создать процесс</button></a>
             </div>
         </div>
+        <div class="table-container">
+            <table class="stripped">
+                <thead>
+                <tr>
+                    <th class="text-align-cener"><input type="checkbox" disabled /></th>
+                    <th>Организация</th>
+                    <th class="text-align-cener">Запуск</th>
+                    <th>Годы</th>
+                    <th>Состояние процесса</th>
+                    <th>Пользователь</th>
+                    <th>Статус</th>
+                    <th>Лимиты</th>
+                    <th>Просмотр</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="proc: ${processList}">
+                    <td class="text-align-cener"><input type="checkbox" /></td>
+                    <td th:text="${proc.gosOrganization.name}"></td>
+                    <td class="text-align-cener">
+                        <span class="text-grey">с</span>
+                        <span th:text="${#dates.year(proc.createdAt) + '.' + #dates.month(proc.createdAt) + '.' + #dates.day(proc.createdAt)}"></span>
+                        <br />
+                        <span class="text-grey">по</span>
+                        <span th:text="${#dates.year(proc.createdAt) + '.' + #dates.month(proc.createdAt) + '.' + #dates.day(proc.createdAt)}"></span>
+                    </td>
+                    <td><span th:text="${proc.firstYear + '-' + proc.secondYear + '-' + proc.thirdYear}"></span></td>
+                    <td th:text="${proc.stageName}"></td>
+                    <td th:text="${proc.stageRole}"></td>
+                    <td th:text="${proc.statusText}"></td>
+                    <td th:text="${proc.initialLimitValue + '-' + proc.limitValue}"></td>
+                    <td>
+                        <a th:href="@{'/processdetails/' + ${proc.id}}" class="link">Детали</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
+</div>
 </html>

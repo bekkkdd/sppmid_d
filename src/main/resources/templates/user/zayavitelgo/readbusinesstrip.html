@@ -81,20 +81,15 @@
                     <form action="#" method="POST">
                         <div class="input-group" id="routes">
                             <label for="route">Маршрут</label>
-                            <input type="text" placeholder="Введите маршрут" name="routes" id="route" />
+                            <input th:each="routeData : ${businessTripRouteDataList}" th:value="${routeData.businessTripRoute.routeName}" type="text" placeholder="Введите маршрут" name="routes" id="route" />
                         </div>
                         <div class="input-group-multiple">
                             <div class="input-group-multiple-title">Даты</div>
                             <div class="input-group-multiple-list">
-                                <div class="input-group-multiple-item">
-                                    <label for="date">Маршрут 1</label>
-                                    <input type="date" name="date" id="date" />
+                                <div class="input-group-multiple-item" th:each="routeData : ${businessTripRouteDataList}">
+                                    <label for="date" th:text="${'Маршрут ' + (businessTripRouteDataList.indexOf(routeData)  + 1)}"> </label>
+                                    <input th:value="${routeData.dateFrom}" type="date" name="date" id="date" />
                                     <input type="date" name="date2" id="date2" />
-                                </div>
-                                <div class="input-group-multiple-item">
-                                    <label for="date3">Маршрут 2</label>
-                                    <input type="date" name="date3" id="date3" />
-                                    <input type="date" name="date4" id="date4" />
                                 </div>
                             </div>
                         </div>
@@ -111,40 +106,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="input-group" id="cities">
-                            <label for="city">Города посещения</label>
-                            <input type="text" placeholder="Введите данные" name="cities" id="city" />
-                        </div>
-                        <div class="input-group-checkbox">
-                            <input type="checkbox" id="president" />
-                            <label for="president">Официальная поездка делигации во главе президента</label>
-                        </div>
-
-                        <div class="input-group">
-                            <div class="input-group-inline">
-                                <label for="textfield">Обоснование сроков нахождения</label>
-                                <div class="input-group-characters-count">
-                                    <span id="textfield-characters">0</span> / <span id="textfield-max"></span> символов
-                                </div>
-                            </div>
-                            <textarea
-                                    name="textfield"
-                                    id="textfield"
-                                    cols="30"
-                                    rows="10"
-                                    placeholder="Введите данные"
-                                    maxlength="1000"
-                                    data-characters-counter
-                                    data-characters-count-id="textfield-characters"
-                                    data-characters-max-id="textfield-max"
-                            ></textarea>
-                        </div>
-
-                        <h2 class="heading">Забронированные билеты</h2>
-                        <div class="input-group-file">
-                            <input type="file" name="file" id="file" />
-                            <label for="file">Загрузить файл</label>
-                        </div>
 
                         <div class="input-group-multiple">
                             <div class="input-group-multiple-title">Дни прибывания</div>
@@ -159,7 +120,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="input-group-multiple">
                             <div class="input-group-multiple-title">Оплата</div>
                             <div class="input-group-multiple-list">
@@ -204,12 +164,64 @@
                             </div>
                         </div>
 
+                        <div class="input-group" id="cities">
+                            <label for="city">Города посещения</label>
+                            <input readonly th:each="cit : ${businessTrip.businessTripCities}" type="text" placeholder="Введите данные"
+                                   th:value="${cit.cityName}" name="cities" id="city" />
+                        </div>
+                        <div class="input-group-checkbox">
+                            <input type="checkbox" id="president" th:checked="${businessTrip.isOfficialDelegationWithPresident}" onclick="return false"/>
+                            <label for="president">Официальная поездка делигации во главе президента</label>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="input-group-inline">
+                                <label for="textfield">Обоснование сроков нахождения</label>
+                                <div class="input-group-characters-count">
+                                    <span id="textfield-characters">0</span> / <span id="textfield-max"></span> символов
+                                </div>
+                            </div>
+                            <textarea
+                                    readonly
+                                    th:text="${businessTrip.businessTripTermProof}"
+                                    name="textfield"
+                                    id="textfield"
+                                    cols="30"
+                                    rows="10"
+                                    placeholder="Введите данные"
+                                    maxlength="1000"
+                                    data-characters-counter
+                                    data-characters-count-id="textfield-characters"
+                                    data-characters-max-id="textfield-max"
+                            ></textarea>
+                        </div>
+
+                        <h2 class="heading">Забронированные билеты</h2>
+                        <div class="input-group-file">
+                            <div class="col-sm-8" th:if="${businessTrip.ticketFile != null}">
+                                <a class="btn btn-primary btn-sm"
+                                   th:href="@{'/downloadticket/' + ${businessTrip.ticketFile}}">Скачать
+                                    билеты</a>
+                            </div>
+                            <div class="col-sm-8" th:if="${businessTrip.ticketFile == null}">
+                                <a class="btn btn-secondary btn-sm" readonly="true"> Билеты не прикреплены</a>
+                            </div>
+<!--                            <input type="file" name="file" id="file" />-->
+<!--                            <label for="file">Загрузить файл</label>-->
+                        </div>
+
+
                         <div class="input-group">
                             <label for="transport-type">Тип паспорта</label>
                             <div class="select-wrapper">
                                 <select name="transport-type" id="transport-type">
-                                    <option disabled selected>Выбрать</option>
-                                    <option>Тип паспорта</option>
+                                    <option value="1" th:selected="${businessTrip.passportType == 1}">
+                                        Дипломатический
+                                    </option>
+                                    <option value="2" th:selected="${businessTrip.passportType == 2}">Служебный
+                                    </option>
+                                    <option value="3" th:selected="${businessTrip.passportType == 3}">Обычный
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -221,6 +233,9 @@
                                     <option disabled selected>Выбрать</option>
                                     <option>Виза</option>
                                 </select>
+                                <input readonly type="checkbox" onclick="return false" value="true"
+                                       style="margin-right:10px;" id="visaCheckBoxId"
+                                       th:checked="${businessTrip.isVisa}">
                             </div>
                         </div>
 
@@ -344,164 +359,23 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr>
+                                            <tr th:each="proc: ${mainProcesses}">
                                                 <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
+                                                <td th:text="${proc.gosOrganization.name}"></td>
                                                 <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
+                                                    <span class="text-grey">с</span>
+                                                    <span th:text="${#dates.year(proc.createdAt) + '.' + #dates.month(proc.createdAt) + '.' + #dates.day(proc.createdAt)}"></span>
+                                                    <br />
+                                                    <span class="text-grey">по</span>
+                                                    <span th:text="${#dates.year(proc.createdAt) + '.' + #dates.month(proc.createdAt) + '.' + #dates.day(proc.createdAt)}"></span>
                                                 </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
+                                                <td><span th:text="${proc.firstYear + '-' + proc.secondYear + '-' + proc.thirdYear}"></span></td>
+                                                <td th:text="${proc.stageName}"></td>
+                                                <td th:text="${proc.stageRole}"></td>
+                                                <td th:text="${proc.statusText}"></td>
+                                                <td th:text="${proc.initialLimitValue + '-' + proc.limitValue}"></td>
                                                 <td>
-                                                    <a href="#" class="link">Детали</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
-                                                <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
-                                                </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
-                                                <td>
-                                                    <a href="#" class="link">Детали</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
-                                                <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
-                                                </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
-                                                <td>
-                                                    <a href="#" class="link">Детали</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
-                                                <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
-                                                </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
-                                                <td>
-                                                    <a href="#" class="link">Детали</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
-                                                <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
-                                                </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
-                                                <td>
-                                                    <a href="#" class="link">Детали</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
-                                                <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
-                                                </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
-                                                <td>
-                                                    <a href="#" class="link">Детали</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
-                                                <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
-                                                </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
-                                                <td>
-                                                    <a href="#" class="link">Детали</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
-                                                <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
-                                                </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
-                                                <td>
-                                                    <a href="#" class="link">Детали</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
-                                                <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
-                                                </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
-                                                <td>
-                                                    <a href="#" class="link">Детали</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-align-cener"><input type="checkbox" /></td>
-                                                <td>Название организации</td>
-                                                <td class="text-align-cener">
-                                                    <span class="text-grey">с</span> 02.02.21 <br />
-                                                    <span class="text-grey">по</span> 04.02.21
-                                                </td>
-                                                <td>1964-1967-2021</td>
-                                                <td>В ожидании</td>
-                                                <td>Жуанышев Ильяс</td>
-                                                <td>В процессе</td>
-                                                <td>30.000 - 100.000</td>
-                                                <td>
-                                                    <a href="#" class="link">Детали</a>
+                                                    <a th:href="@{'/processdetails/' + ${proc.id}}" class="link">Детали</a>
                                                 </td>
                                             </tr>
                                             </tbody>
@@ -739,12 +613,12 @@
                             </div>
                         </div>
                         <div class="row mt-3">
-                            <div class="col-sm-12">
-                                <input readonly type="checkbox" onclick="return false" value="true"
-                                       style="margin-right:10px;" id="visaCheckBoxId"
-                                       th:checked="${businessTrip.isVisa}">
-                                <label>Виза</label>
-                            </div>
+<!--                            <div class="col-sm-12">-->
+<!--                                <input readonly type="checkbox" onclick="return false" value="true"-->
+<!--                                       style="margin-right:10px;" id="visaCheckBoxId"-->
+<!--                                       th:checked="${businessTrip.isVisa}">-->
+<!--                                <label>Виза</label>-->
+<!--                            </div>-->
                         </div>
                         <div class="row mt-3">
                             <div class="col-sm-3">
