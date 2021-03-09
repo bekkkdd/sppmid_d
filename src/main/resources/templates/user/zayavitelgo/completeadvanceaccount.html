@@ -1,0 +1,700 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small>Главная страница</small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{'/zayavitelgo/businesstrips'}">Оформление
+                            паспорта</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{'/zayavitelgo/createadvanceaccount'}">Заявление
+                            на паспорт</a></li>
+                        <li class="breadcrumb-item active">Заявление</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><span th:text="${user.lastName}"></span></h5>
+                            <h5><span th:text="${user.firstName}"></span></h5>
+                            <h5><span th:text="${user.middleName}"></span></h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text mt-3">
+                                <a th:href="@{'/zayavitelgo/processlist'}" class="btn btn-flat btn-primary"
+                                   style="width: 100%;">План мероприятий</a>
+                                <br>
+                                <br>
+                                <a th:href="@{'/zayavitelgo/businesstrips'}" class="btn btn-flat btn-primary"
+                                   style="width: 100%;">Оформление на командировку</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <h5>Заявление на заграничную командировку</h5>
+                                </div>
+                                <div class="col-sm-2">
+                                    <button class="btn btn-primary btn-flat btn-sm float-right"
+                                            onclick="savePassportRequest()">Сохранить
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body" style="height:500px;overflow:auto;">
+                            <div class="row mt-3">
+                                <div class="col-sm-12">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                Ф.И.О.
+                                            </th>
+                                            <th>
+                                                Должность
+                                            </th>
+                                            <th>
+                                                Гос. служащий
+                                            </th>
+                                            <th>
+                                                Выездной
+                                            </th>
+                                            <th>
+                                                Наличие долгов
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="usrData : ${userDataList}">
+                                            <td>
+                                                <span th:text="${usrData.fioData}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${usrData.position}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${usrData.gosServant?'Да':'Нет'}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${usrData.abroadable?'Да':'Нет'}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:text="${usrData.hasDebts?'Да':'Нет'}"></span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row mt-5">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Характер поездки</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control bg-light" readonly id="tripCharacterFieldId"
+                                           th:value="${advanceAccount.businessTrip.tripCharacter}" name="trip_character"
+                                           placeholder="Характер поездки">
+                                </div>
+                            </div>
+                             <div th:each="purpose : ${advanceAccount.businessTrip.businessTripPurposes}"> <hr>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Цель визита</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input readonly type="text" class="form-control bg-light"
+                                               name="trip_purpose"
+                                               th:value="${purpose.purpose}">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Достижение цели</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <form th:action="@{'/zayavitelgo/savepurposereaching'}" method="post">
+                                            <input type="hidden" name="purpose_id"
+                                                   th:value="${purpose.id}">
+                                            <input type="hidden" name="advance_account_id"
+                                                   th:value="${advanceAccount.id}">
+                                            <input type="text" class="form-control" name="purpose_reaching"
+                                                   th:value="${purpose.reaching}">
+                                            <div class="col-sm-3 mt-2">
+                                                <button type="submit"
+                                                        class="btn btn-success btn-sm">Сохранить <i
+                                                        class="far fa-save"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Основание</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control bg-light" readonly id="tripProofFieldId"
+                                           th:value="${advanceAccount.businessTrip.businessTripProof}" name="trip_proof"
+                                           placeholder="Основание">
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Маршрут</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control bg-light" readonly
+                                           style="background-color: white;"
+                                           th:if="${#lists.isEmpty(businessTripRouteDataList)}">
+                                    <div th:each="routeData : ${businessTripRouteDataList}" style="margin-bottom: 5px;">
+                                        <input type="text" class="form-control bg-light" readonly
+                                               style="background-color: white;"
+                                               th:value="${routeData.businessTripRoute.routeName}">
+                                        <div class="row mt-2">
+                                            <div class="col-sm-4">
+                                                <label class="mt-1">Период</label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input type="text" readonly style="background-color: white;"
+                                                       class="form-control"
+                                                       th:value="${'С ' + #dates.format(routeData.dateFrom, 'dd-MM-yyyy') + ', ' + routeData.timeFrom + ' по ' + #dates.format(routeData.dateTo, 'dd-MM-yyyy') + ' ' + routeData.timeTo}">
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-sm-4">
+                                                <label class="mt-1">Количество дней</label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input type="number" class="form-control"
+                                                       th:value="${routeData.daysAmount}"
+                                                       th:id="${'routeDataDays' + routeData.id}">
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12">
+                                                <input type="checkbox" onclick="return false" style="margin-right:10px;"
+                                                       th:id="${'routeDataDaily' + routeData.id}"
+                                                       th:checked="${routeData.daily}">
+                                                <label>Суточные</label>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12">
+                                                <input type="checkbox" onclick="return false" style="margin-right:10px;"
+                                                       th:id="${'routeDataOneDay' + routeData.id}"
+                                                       th:checked="${routeData.oneDay}">
+                                                <label>Один день</label>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12">
+                                                <input type="checkbox" onclick="return false" style="margin-right:10px;"
+                                                       th:id="${'routeDataResidence' + routeData.id}"
+                                                       th:checked="${routeData.residence}">
+                                                <label>Проживание</label>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-sm-12">
+                                                <input type="checkbox" onclick="return false" style="margin-right:10px;"
+                                                       th:id="${'routeDataTransport' + routeData.id}"
+                                                       th:checked="${routeData.transport}">
+                                                <label>Транспорт</label>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label>Города посещения</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div th:each="cit : ${advanceAccount.businessTrip.businessTripCities}"
+                                         style="margin-bottom: 5px;">
+                                        <div class="row">
+                                            <div class="col-lg-11">
+                                                <input type="text" class="form-control bg-light" readonly
+                                                       style="background-color: white;" th:value="${cit.cityName}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-12">
+                                    <input type="checkbox" onclick="return false" value="true"
+                                           style="margin-right:10px;" id="officialPresidentDelegationCheckBoxId"
+                                           th:checked="${advanceAccount.businessTrip.isOfficialDelegationWithPresident}">
+                                    <label>Официальная поездка делегации во главе Президента</label>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-12">
+                                    <input type="checkbox" onclick="return false" value="true"
+                                           style="margin-right:10px;" id="inviterExpenseCheckBoxId"
+                                           th:checked="${advanceAccount.businessTrip.isAtTheExpenseOfInvitingParty}">
+                                    <label>За счёт средств приглашающей стороны</label>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-12">
+                                    <input type="checkbox" onclick="return false" value="true"
+                                           style="margin-right:10px;" id="visaCheckBoxId"
+                                           th:checked="${advanceAccount.businessTrip.isVisa}">
+                                    <label>Виза</label>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Обоснование сроков нахождения</label>
+                                </div>
+                                <div class="col-sm-8">
+                                        <textarea style="width: 100%;" rows="5" placeholder="Не менее 1000 символов"
+                                                  class="form-control"
+                                                  id="tripTermProofFieldId"
+                                                  th:text="${advanceAccount.businessTrip.businessTripTermProof}"
+                                                  name="trip_proof"></textarea>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Забронированные билеты</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Загрузить</span>
+                                        </div>
+                                        <div class="custom-file">
+                                            <!--                                                <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" id="inputGroupFile01">-->
+                                            <!--                                                <label class="custom-file-label" for="inputGroupFile01">Выберите файл</label>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Тип паспорта</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <select class="form-control" name="passport_type" id="passportTypeSelectorId">
+                                        <option value="1"
+                                                th:selected="${advanceAccount.businessTrip.passportType == 1}">
+                                            Дипломатический
+                                        </option>
+                                        <option value="2"
+                                                th:selected="${advanceAccount.businessTrip.passportType == 2}">Служебный
+                                        </option>
+                                        <option value="3"
+                                                th:selected="${advanceAccount.businessTrip.passportType == 3}">Обычный
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Название программы: </label>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="checkbox" onclick="return false" value="true" class="mr-1 mt-1"
+                                           id="isForeign005CheckBoxId"
+                                           th:checked="${advanceAccount.businessTrip.isForeign005}">
+                                    <label class="mt-1">005 «Заграничные командировки»</label>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Выбор мероприятий: </label>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input readonly type="radio" onclick="return false" value="true"
+                                           th:checked="${advanceAccount.businessTrip.isEventPlan != null && advanceAccount.businessTrip.isEventPlan}"
+                                           class="mr-1 mt-2" name="plan_choice_name" id="by_plan_id">
+                                    <label class="mt-1">«По плану мероприятий»</label>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-6 offset-3">
+                                    <input type="radio" readonly onclick="return false" value="true"
+                                           th:checked="${advanceAccount.businessTrip.isEventPlan != null && !advanceAccount.businessTrip.isEventPlan}"
+                                           class="mr-1 mt-2" name="plan_choice_name" id="by_without_plan_id">
+                                    <label class="mt-1">«Вне плана мероприятий»</label>
+                                </div>
+                            </div>
+                            <div id="by_without_plan_div_id"
+                                 th:style="${advanceAccount.businessTrip.isEventPlan == null || advanceAccount.businessTrip.isEventPlan ? 'display : none;' : 'display : block;'}">
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Обоснование</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                            <textarea style="width: 100%;" rows="5" placeholder="Не менее 1000 символов"
+                                                      class="form-control"
+                                                      id="withoutEventProofFieldId"
+                                                      th:text=${advanceAccount.businessTrip.withoutEventProof}
+                                                      name="without_event_proof"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-8 offset-3">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Загрузить</span>
+                                            </div>
+                                            <div class="custom-file">
+                                                <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" name="proof_file">
+                                                <label class="custom-file-label">Выберите файл</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:style="${advanceAccount.businessTrip.isEventPlan == null || !advanceAccount.businessTrip.isEventPlan ? 'display : none;' : 'display : block;'}"
+                                 id="by_plan_div_id">
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Выбор плана мероприятии</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <table class="table" style="width:100%;">
+                                            <thead>
+                                            <tr>
+                                                <th colspan="2">
+                                                    Организация
+                                                </th>
+                                                <th>
+                                                    Дата запуска
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="mainProcess : ${mainProcesses}">
+                                                <td>
+                                                    <input th:checked="${advanceAccount.businessTrip.process!=null && advanceAccount.businessTrip.process.id == mainProcess.id}"
+                                                           type="radio" name="plan_id"
+                                                           th:id="'event-' + ${mainProcess.id}"
+                                                           th:onclick="'chooseProcess(this,' + ${mainProcess.organization.id} + ')'">
+                                                </td>
+                                                <td th:text=${mainProcess.organization.name}>
+                                                </td>
+                                                <td th:text=${mainProcess.createdAt}>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Политический исполнитель</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input th:if="${advanceAccount.businessTrip.executor != null}" readonly
+                                           type="text" class="form-control bg-light"
+                                           th:value="${advanceAccount.businessTrip.executor.firstName} + ' ' + ${advanceAccount.businessTrip.executor.middleName}">
+                                </div>
+                            </div>
+                            <div th:if="${advanceAccount.businessTrip.attachment6Created != null}">
+                                <a href="#">Приказ</a>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Посадочный талон</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Загрузить</span>
+                                        </div>
+                                        <div class="custom-file">
+                                            <label class="custom-file-label" for="boardingPassFileInputId">Выберите
+                                                файл</label>
+                                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" id="boardingPassFileInputId">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3" th:if="${advanceAccount.boardingPassFile != null}">
+                                <div class="col-sm-2 offset-3">
+                                    <a class="btn btn-primary btn-sm"
+                                       th:href="@{'/downloadboardingpass/' + ${advanceAccount.boardingPassFile}}">Скачать
+                                        посадочный талон</a>
+                                </div>
+                                <div class="col-1">
+                                    <form th:action="@{'/removeboardingpassfile'}" method="post">
+                                        <input type="hidden" name="advance_account_id" th:value="${advanceAccount.id}">
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm"><i
+                                                class="far fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Копия паспорта о прибытии/убытии</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Загрузить</span>
+                                        </div>
+                                        <div class="custom-file">
+                                            <label class="custom-file-label" for="arrivalDepartureFileInputId">Выберите
+                                                файл</label>
+                                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input"
+                                                   id="arrivalDepartureFileInputId">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3" th:if="${advanceAccount.arrivalDepartureFile != null}">
+                                <div class="col-sm-2 offset-3">
+                                    <a class="btn btn-primary btn-sm"
+                                       th:href="@{'/downloadarrivaldeparture/' + ${advanceAccount.arrivalDepartureFile}}">Скачать
+                                        копию паспорта</a>
+                                </div>
+                                <div class="col-1">
+                                    <form th:action="@{'/removearrivaldeparturefile'}" method="post">
+                                        <input type="hidden" name="advance_account_id" th:value="${advanceAccount.id}">
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm"><i
+                                                class="far fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Выписка из банка</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Загрузить</span>
+                                        </div>
+                                        <div class="custom-file">
+                                            <label class="custom-file-label" for="bankDischargeFileInputId">Выберите
+                                                файл</label>
+                                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" id="bankDischargeFileInputId">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3" th:if="${advanceAccount.bankDischargeFile != null}">
+                                <div class="col-sm-2 offset-3">
+                                    <a class="btn btn-primary btn-sm"
+                                       th:href="@{'/downloadbankdischarge/' + ${advanceAccount.bankDischargeFile}}">Скачать
+                                        выписку из банка</a>
+                                </div>
+                                <div class="col-1">
+                                    <form th:action="@{'/removebankdischarge'}" method="post">
+                                        <input type="hidden" name="advance_account_id" th:value="${advanceAccount.id}">
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm"><i
+                                                class="far fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Квитанция из банка</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Загрузить</span>
+                                        </div>
+                                        <div class="custom-file">
+                                            <label class="custom-file-label" for="bankReceiptFileInputId">Выберите
+                                                файл</label>
+                                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" id="bankReceiptFileInputId">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3" th:if="${advanceAccount.bankReceiptFile != null}">
+                                <div class="col-sm-2 offset-3">
+                                    <a class="btn btn-primary btn-sm"
+                                       th:href="@{'/downloadbankreceipt/' + ${advanceAccount.bankReceiptFile}}">Скачать
+                                        квитанцию из банка</a>
+                                </div>
+                                <div class="col-1">
+                                    <form th:action="@{'/removebankreceipt'}" method="post">
+                                        <input type="hidden" name="advance_account_id" th:value="${advanceAccount.id}">
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm"><i
+                                                class="far fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-sm-3">
+                                    <label class="mt-1">Фисклаьный чек</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Загрузить</span>
+                                        </div>
+                                        <div class="custom-file">
+                                            <label class="custom-file-label" for="bankFiscalFileInputId">Выберите
+                                                файл</label>
+                                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" id="bankFiscalFileInputId">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3" th:if="${advanceAccount.bankFiscalFile != null}">
+                                <div class="col-sm-2 offset-3">
+                                    <a class="btn btn-primary btn-sm"
+                                       th:href="@{'/downloadbankfiscal/' + ${advanceAccount.bankFiscalFile}}">Скачать
+                                        фискальный чек</a>
+                                </div>
+                                <div class="col-1">
+                                    <form th:action="@{'/removebankfiscal'}" method="post">
+                                        <input type="hidden" name="advance_account_id" th:value="${advanceAccount.id}">
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm"><i
+                                                class="far fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-sm-4">
+                                    <label class="mt-1">Номер карты</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input id="cardNumberFieldId" type="text" style="background-color: white;"
+                                           class="form-control" th:value="${advanceAccount.cardNumber}">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-sm-4">
+                                    <label class="mt-1">Ф.И.О. держателя карты</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input id="cardFioFieldId" type="text" style="background-color: white;"
+                                           class="form-control" th:value="${advanceAccount.cardFio}">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-sm-4">
+                                    <label class="mt-1">Срок действия (м/г) карты</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input id="cardExpirationFieldId" type="text" style="background-color: white;"
+                                           class="form-control" th:value="${advanceAccount.cardExpiration}">
+                                </div>
+                            </div>
+                            <div class="row mt-2" style="height: 50%">
+                                <div class="col-sm-4">
+                                    <label class="mt-1">Диалогово окно</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <textarea id="dialogWindowFieldId" type="text" style="background-color: white; height: 100%"
+                                              class="form-control" th:text="${advanceAccount.dialogWindow}"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <form hidden enctype="multipart/form-data" th:action="${'/zayavitelgo/saveadvanceaccount'}"
+                              method="post"
+                              id="saveBusinessTripFormId">
+                            <input type="hidden" name="advance_account_id" th:value="${advanceAccount.id}">
+                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" name="boarding_pass_file" id="boardingPassFileId">
+                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" name="arrival_departure_file" id="arrivalDepartureFileId">
+                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" name="bank_discharge_file" id="bankDischargeFileId">
+                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" name="bank_receipt_file" id="bankReceiptFileId">
+                            <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" name="bank_fiscal_file" id="bankFiscalFileId">
+                            <input type="text" name="card_number" id="cardNumberId">
+                            <input type="text" name="card_fio" id="cardFioId">
+                            <input type="text" name="card_expiration" id="cardExpirationId">
+                            <input type="text" name="dialog_window" id="dialogWindowId">
+                        </form>
+                        <script type="text/javascript">
+                            function savePassportRequest() {
+                                boardingPass = document.getElementById("boardingPassFileInputId").files;
+                                arrivalDeparture = document.getElementById("arrivalDepartureFileInputId").files;
+                                bankDischarge = document.getElementById("bankDischargeFileInputId").files;
+                                bankReceipt = document.getElementById("bankReceiptFileInputId").files;
+                                bankFiscal = document.getElementById("bankFiscalFileInputId").files;
+                                cardNumber = document.getElementById("cardNumberFieldId").value
+                                cardFio = document.getElementById("cardFioFieldId").value
+                                cardExpiration = document.getElementById("cardExpirationFieldId").value
+                                dialogWindow = document.getElementById("dialogWindowFieldId").value
+
+                                document.getElementById("boardingPassFileId").files = boardingPass;
+                                document.getElementById("arrivalDepartureFileId").files = arrivalDeparture;
+                                document.getElementById("bankDischargeFileId").files = bankDischarge;
+                                document.getElementById("bankReceiptFileId").files = bankReceipt;
+                                document.getElementById("bankFiscalFileId").files = bankFiscal;
+                                document.getElementById("cardNumberId").value = cardNumber;
+                                document.getElementById("cardFioId").value = cardFio;
+                                document.getElementById("cardExpirationId").value = cardExpiration;
+                                document.getElementById("dialogWindowId").value = dialogWindow;
+
+                                document.getElementById("saveBusinessTripFormId").submit();
+                            }
+
+                            document.querySelector('#boardingPassFileInputId').addEventListener('change', function (e) {
+                                var fileName = e.target.files[0].name;
+                                var nextSibling = e.target.previousElementSibling
+                                nextSibling.innerText = fileName
+                            })
+                            document.querySelector('#arrivalDepartureFileInputId').addEventListener('change', function (e) {
+                                var fileName = e.target.files[0].name;
+                                var nextSibling = e.target.previousElementSibling
+                                nextSibling.innerText = fileName
+                            })
+                            document.querySelector('#bankDischargeFileInputId').addEventListener('change', function (e) {
+                                var fileName = e.target.files[0].name;
+                                var nextSibling = e.target.previousElementSibling
+                                nextSibling.innerText = fileName
+                            })
+                            document.querySelector('#bankReceiptFileInputId').addEventListener('change', function (e) {
+                                var fileName = e.target.files[0].name;
+                                var nextSibling = e.target.previousElementSibling
+                                nextSibling.innerText = fileName
+                            })
+                            document.querySelector('#bankFiscalFileInputId').addEventListener('change', function (e) {
+                                var fileName = e.target.files[0].name;
+                                var nextSibling = e.target.previousElementSibling
+                                nextSibling.innerText = fileName
+                            })
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

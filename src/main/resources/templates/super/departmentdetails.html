@@ -1,0 +1,66 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small th:text = "#{label.table.detail}"></small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}" th:text = "#{label.mainPage}"></a></li>
+                        <li class="breadcrumb-item"><a th:href="@{'/super/listorganizations'}" th:text = "#{label.organizations}"></a></li>
+                        <li class="breadcrumb-item"><a th:href="@{'/super/organizationdetails/' + ${department.organization.id}}" th:text = "${department.organization.name}"></a></li>
+                        <li class="breadcrumb-item active" th:text = "#{label.departmentDetails}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title" th:text = "#{label.departmentDetails}"></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6 offset-3">
+                                    <form th:action="@{'/super/updatedepartment'}" method="post">
+                                        <input type="hidden" name="id" th:value = "${department.id}">
+                                        <label th:text = "#{label.departmentName}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" th:placeholder="#{label.departmentName}" name="name" th:value="${department.name}">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-4 offset-8">
+                                                <button type="submit" class="btn btn-primary btn-block btn-flat float-right" th:text="#{label.update}"></button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                    </form>
+                                    <br>
+
+                                    <form th:action="@{'/super/removedepartment'}" method="post">
+                                        <div class="row">
+                                            <div class="col-4 offset-8">
+                                                <input type="hidden" name="id" th:value = "${department.id}">
+                                                <button type="submit" class="btn btn-danger btn-block btn-flat float-left" th:text = "#{label.removeDepartment}"></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

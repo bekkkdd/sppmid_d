@@ -1,0 +1,101 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h3 class="m-0 text-dark"><small>Дополнительные настройки роли</small></h3>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+            <li class="breadcrumb-item"><a th:href="@{'/super/listusers'}">Пользователи</a></li>
+            <li class="breadcrumb-item"><a th:href="@{'/super/details/' + ${userDetail.id}}">Детали</a></li>
+            <li class="breadcrumb-item active">Дополнительные настройки роли</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              <h5>Дополнительные настройки роли</h5>
+            </div>
+            <div class="card-body" style="min-height: 600px;">
+              <div class="row">
+                <div class="col-sm-5">
+                  <form th:action="@{'/super/removeuserpermission'}" method="post" id = "removeUserPermissionId">
+                    <input type="hidden" name="user_id" th:value = "${userDetail.id}">
+                    <label>
+                      Список уровней доступа
+                    </label>
+                    <div class="input-group mb-3">
+                      <select multiple class="form-control" style="width: 100%; min-height: 200px;" name="role_id" id = "removeRoleId">
+                        <option th:each="perm: ${roles}" th:text = "${perm.description}" th:value = "${perm.id}"></option>
+                      </select>
+                    </div>
+                    <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                  </form>
+                </div>
+                <div class="col-sm-2">
+                  <div class="row mt-5 pt-5">
+                    <div class="col-sm-12">
+                      <button class="btn btn-danger btn-sm" style="width: 100%;" onclick="removeUserPermission()">Удалить ></button>
+                    </div>
+                  </div>
+                  <div class="row mt-1">
+                    <div class="col-sm-12">
+                      <button class="btn btn-success btn-sm" style="width: 100%;" onclick="addUserPermission()">< Добавить</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-5">
+                  <form th:action="@{'/super/adduserpermission'}" method="post" id = "addUserPermissionId">
+                    <input type="hidden" name="user_id" th:value = "${userDetail.id}">
+                    <label>
+                      Возможные уровни доступа
+                    </label>
+                    <div class="input-group mb-3">
+                      <select multiple class="form-control" style="width: 100%; min-height: 200px;" name="role_id" id = "addRoleId">
+                        <option th:each="perm: ${availableRoles}" th:text = "${perm.description}" th:value = "${perm.id}"></option>
+                      </select>
+                    </div>
+                    <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                  </form>
+                </div>
+                <script type="text/javascript">
+                  function addUserPermission(){
+                    if(document.getElementById("addRoleId").value!=""){
+                      document.getElementById("addUserPermissionId").submit();
+                    }
+                  }
+                  function removeUserPermission(){
+                    if(document.getElementById("removeRoleId").value!="") {
+                      document.getElementById("removeUserPermissionId").submit();
+                    }
+                  }
+                </script>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <form th:action="@{'/super/resetpermissions'}" method="post">
+                    <input type="hidden" name="user_id" th:value = "${userDetail.id}">
+                    <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                    <button class="btn btn-info btn-sm">Сбросить настройки</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</html>

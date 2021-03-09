@@ -1,0 +1,64 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small th:text = "#{label.rolesList}"></small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}" th:text = "#{label.mainPage}"></a></li>
+                        <li class="breadcrumb-item active" th:text = "#{label.rolesList}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title" th:text = "#{label.rolesList}"></h3>
+                            <div class="card-tools">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <a th:href = "@{'/super/addgroup/'}" class="btn btn-flat btn-success btn-sm" th:text = "#{label.addRole}">
+                            </a>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th th:text = "#{label.role}">
+                                    </th>
+                                    <th th:text = "#{label.table.description}">
+                                    </th>
+                                    <th th:text = "#{label.table.detail}">
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="group: ${groups}">
+                                    <td th:text = "${group.name}"></td>
+                                    <td th:text = "${group.description}"></td>
+                                    <td><a th:href="@{'/super/groupdetails/' + ${group.id}}" class="btn btn-info btn-sm" th:text = "#{label.table.detail}"></a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer clearfix">
+                            <th:block th:each = "id : ${#numbers.sequence(1, pageCount)}">
+                                <a class="btn btn-info btn-sm btn-flat" th:classappend="${id}==${#request.getParameter('page')} ? 'active': '' " th:href="@{/super/listgroups(page=${id})}" th:text = "${id}"></a>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

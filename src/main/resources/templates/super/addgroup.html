@@ -1,0 +1,65 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small th:text = "#{label.addRoleText}"></small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}" th:text = "#{label.mainPage}"></a></li>
+                        <li class="breadcrumb-item"><a th:href="@{'/super/listgroups'}" th:text = "#{label.roles}"></a></li>
+                        <li class="breadcrumb-item active" th:text = "#{label.addRoleText}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 th:text = "#{label.addRoleText}"></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="col-sm-6 offset-3">
+                                <form th:action="@{'/super/addgroup'}" method="post">
+                                    <div class="alert alert-success alert-dismissible" th:if = "${#request.getParameter('success')!=null}">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <h5><i class="icon fas fa-check" th:text = "#{label.successAddingRole}"></i></h5>
+                                    </div>
+                                    <div class="alert alert-danger alert-dismissible" th:if = "${#request.getParameter('error')!=null}">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <h5><i class="icon fas fa-ban" th:text = "#{label.failureAddingRole}"></i></h5>l
+                                    </div>
+                                    <label th:text = "#{label.roleName}">
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" th:placeholder="#{label.roleName}" name="name">
+                                    </div>
+                                    <label th:text = "#{label.roleDescription}">
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" th:placeholder="#{label.roleDescription}" name="description">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 offset-8">
+                                            <button type="submit" class="btn btn-primary btn-block btn-flat float-right" th:text = "#{label.add}"></button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

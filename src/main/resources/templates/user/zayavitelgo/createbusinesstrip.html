@@ -1,0 +1,66 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layouts/main.html">
+    <div layout:fragment="content">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h3 class="m-0 text-dark"><small>Главная страница</small></h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{'/zayavitelgo/businesstrips'}">Оформление на командировку</a></li>
+                            <li class="breadcrumb-item active">Заявление на командирование</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><span th:text = "${user.lastName}"></span></h5>
+                                <h5><span th:text = "${user.firstName}"></span></h5>
+                                <h5><span th:text = "${user.middleName}"></span></h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text mt-3">
+                                    <a th:href = "@{'/zayavitelgo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
+                                    <br>
+                                    <br>
+                                    <a th:href = "@{'/zayavitelgo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Заявление на заграничную командировку</h5>
+                            </div>
+                            <div class="card-body">
+                                <form th:action = "@{'/zayavitelgo/createbusinesstrip'}" method="post">
+                                    <button class="btn btn-link">Групповая командировка</button>
+                                </form>
+                                <br>
+                                <form>
+                                    <button class="btn btn-link">Командирование участника(-ов)</button>
+                                </form>
+                                <br>
+                                <form>
+                                    <button class="btn btn-link">Персональная командировка</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <link rel="stylesheet" th:href="@{'/dist/css/style.bundle.css'}"/>
+
+    <title>План мероприятий</title>
+</head>
+<body>
+<header class="header">
+    <h1 class="header-logo">
+        <a href="#" class="header-link header-logo-link">
+            <img
+                    class="header-logo-img"
+                    th:src="${'/dist/img/70db83ddcc8dc1eaf38ad6de2737e0da.png'}"
+                    alt="Министерство иностранных дел Республики Казахстан"
+            />
+            Министерство иностранных дел Республики Казахстан
+        </a>
+    </h1>
+
+    <div class="header-menu">
+        <a href="#" class="header-home header-link">
+            <img class="header-home-img" th:src="${'/dist/img/home.svg'}" alt="Home icon"/>
+            На главную
+        </a>
+
+        <div class="badge">Заявитель</div>
+
+        <ul class="header-controls" sec:authorize="isAuthenticated()">
+            <li class="header-controls-item header-controls-notification">
+                <button class="btn sm outline grey has-notification notification">
+                    <img th:src="${'/dist/img/bell.svg'}" alt="Notification"/>
+                    <div class="notification-wrapper">
+                        <div class="notification-triangle"></div>
+                        <div class="notification-content">
+                            <div class="notification-content-title">Уведомления</div>
+                            <div class="notification-content-list">
+                                <a href="#" class="notification-content-item">
+                                    <div class="notification-content-item-title redcircle">Заголовок уведомления</div>
+                                    <div class="notification-content-item-description">Вторичный текст</div>
+                                </a>
+                                <a href="#" class="notification-content-item">
+                                    <div class="notification-content-item-title">Заголовок уведомления</div>
+                                    <div class="notification-content-item-description">Вторичный текст</div>
+                                </a>
+                                <a href="#" class="notification-content-item">
+                                    <div class="notification-content-item-title">Заголовок уведомления</div>
+                                    <div class="notification-content-item-description">Вторичный текст</div>
+                                </a>
+                                <a href="#" class="notification-content-item">
+                                    <div class="notification-content-item-title">Заголовок уведомления</div>
+                                    <div class="notification-content-item-description">Вторичный текст</div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            </li>
+
+            <li class="header-controls-item header-controls-profile">
+                <a href="#" class="header-link header-controls-item-link">
+                    <div class="header-avatar">
+                        <img th:src="${'/dist/img/avatar.png'}" alt="avatar"/>
+                    </div>
+                    <p class="header-controls-profile-name" th:text="${user.lastName + ' ' + user.firstName + ' ' + user.middleName}"></p>
+                    <p class="header-controls-profile-position" th:text="${user.group.name}"></p>
+                    <img class="header-controls-item-link-img" th:src="${'/dist/img/user.svg'}" alt="Profile"/>
+                </a>
+            </li>
+
+            <li class="header-controls-item header-controls-disability">
+                <div class="btn outline sm primary disability">
+                    <img th:src="${'/dist/img/noun_Glasses_1641812 1.svg'}" alt="Disability mode"/>
+                    <div class="disability-wrapper">
+                        <div class="disability-controls">
+                            <div class="disability-controls-color">
+                                <button class="btn sm" data-black-white>
+                                    <img th:src="${'/dist/img/grey-mode.svg'}" alt="Toggle Colors"/>
+                                </button>
+                            </div>
+                            <div class="disability-controls-font">
+                                <button class="disability-controls-font-sm btn sm">A</button>
+                                <button class="disability-controls-font-md btn sm">A</button>
+                                <button class="disability-controls-font-lg btn sm">A</button>
+                            </div>
+                        </div>
+                        <div class="disability-triangle"></div>
+                    </div>
+                </div>
+            </li>
+
+            <li class="header-controls-item header-controls-lang">
+                <button class="btn primary sm">RU</button>
+                <button class="btn sm">KZ</button>
+            </li>
+        </ul>
+
+        <aside class="aside">
+            <ul class="aside-nav">
+                <li class="aside-nav-item active">
+                    <a th:href="@{'/zayavitelgo/processlist'}" class="aside-nav-item-link">План мероприятий</a>
+                </li>
+                <li class="aside-nav-item">
+                    <a th:href="@{'/zayavitelgo/businesstrips'}" class="aside-nav-item-link">Заявление на командировку</a>
+                </li>
+                <li class="aside-nav-item">
+                    <a href="#" class="aside-nav-item-link">Оформление паспорта</a>
+                </li>
+                <li class="aside-nav-item">
+                    <a href="#" class="aside-nav-item-link">Отчеты</a>
+                </li>
+            </ul>
+            <button class="btn" data-open-aside>
+                <img th:src="${'/dist/img/arrow-left.svg'}" alt="Open Side bar"/>
+            </button>
+        </aside>
+    </div>
+
+    <button class="header-menu-btn">
+        <div class="header-menu-btn-line"></div>
+    </button>
+</header>
+<div class="container" layout:fragment="content">
+</div>
+<script th:src="@{'/dist/js/bundle.js'}"></script>
+</body>
+</html>

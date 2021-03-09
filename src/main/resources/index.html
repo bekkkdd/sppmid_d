@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<script type="text/javascript" src="jquery-3.4.1.min.js"></script>
+	</head>
+	<body>
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>NAME</th>
+					<th>PRICE</th>
+					<th>DELETE</th>
+				</tr>
+			</thead>
+			<tbody id = "result">
+			</tbody>
+		</table>
+		<script type="text/javascript">
+
+			$(document).ready(updateItems());
+			
+			function updateItems(){
+
+				$.get("http://localhost:8004/api/allitems", {}, function(result){
+
+					table = "";
+
+					for(i=0;i<result.length;i++){
+						table+="<tr>";
+						table+="<td>"+result[i].id+"</td>";
+						table+="<td>"+result[i].name+"</td>";
+						table+="<td>"+result[i].price+"</td>";
+						table+="<td><button onClick = 'deleteItem("+result[i].id+")'>DELETE</button></td>";
+						table+="</tr>";
+					}
+
+					$("#result").html(table);
+
+				});
+
+			}
+
+			function deleteItem(itemId){
+
+				$.post("http://localhost:8004/api/delete", {
+					id: itemId
+				}, 
+				function(data){
+					alert(data);
+					updateItems();
+				});
+
+			}
+
+		</script>
+	</body>
+</html>

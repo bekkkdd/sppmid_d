@@ -1,0 +1,160 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layouts/main.html">
+    <div layout:fragment="content">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h3 class="m-0 text-dark"><small>Главная страница</small></h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                            <li class="breadcrumb-item active">Оформление на командировку</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><span th:text = "${user.lastName}"></span></h5>
+                                <h5><span th:text = "${user.firstName}"></span></h5>
+                                <h5><span th:text = "${user.middleName}"></span></h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text mt-3">
+                                    <a th:href = "@{'/secretary/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
+                                    <br>
+                                    <br>
+                                    <a th:href = "@{'/secretary/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Оформление на заграничную командировку</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Характер поездки
+                                            </th>
+                                            <th>
+                                                Заявитель
+                                            </th>
+                                            <th>
+                                                Департамент
+                                            </th>
+                                            <th>
+                                                Ожидает
+                                            </th>
+                                            <th>
+                                                Просмотр
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <form th:action = "@{'/secretary/combinebusinesstrip'}" method="post" id = "process_list_form_id">
+                                            <tr th:each="businessTrip: ${businessTrips}">
+                                                <td th:text = "${businessTrip.tripCharacter}">
+                                                </td>
+                                                <td th:text = "${businessTrip.creator.firstName} + ' ' + ${businessTrip.creator.lastName}">
+                                                </td>
+                                                <td th:text = "${businessTrip.creator.firstName}">
+                                                </td>
+                                                <td th:text = "${T(kz.bitlab.robygroup.sppmid.core.config.StaticConfig).businessTripStageRoles.get(businessTrip.stage)}">
+                                                </td>
+                                                <td>
+                                                    <a th:href="@{'/secretary/readbusinesstrip/' + ${businessTrip.id}}" class="btn btn-info btn-sm">Детали</a></td>
+                                                </td>
+                                            </tr>
+                                            <input type="hidden" name="uncombine_process_id" id="uncombine_process_id">
+                                        </form>
+                                    </tbody>
+                                </table>
+                                <br>
+                                <button class="btn btn-success btn-flat btn-sm" type="button" onclick="toCombine()" id = "combine_button_id" style="display: none;">+ Объединить</button>
+                                <button class="btn btn-danger btn-flat btn-sm" type="button" onclick="toUncombine()" id = "un_combine_button_id" style="display: none;">- Разъеденить</button>
+                                <script type="text/javascript">
+                                    function checkCombineButton() {
+                                        checkBoxes = document.getElementsByClassName("check-box");
+                                        showButton = true;
+                                        isFirst = true;
+                                        status = 0;
+                                        stage = 0;
+                                        gosOrgan = 0;
+                                        countChecked = 0;
+
+                                        document.getElementById("un_combine_button_id").style.display = "none";
+
+                                        for(i=0;i<checkBoxes.length;i++){
+                                            if(checkBoxes[i].checked){
+                                                countChecked++;
+
+                                                if(countChecked==1){
+                                                    if(document.getElementById("isCombined_"+checkBoxes[i].value).value == 1 && document.getElementById("isUncombinable_"+checkBoxes[i].value).value == 1){
+                                                        document.getElementById("un_combine_button_id").style.display = "block";
+                                                        unCombineProcessId = checkBoxes[i].value;
+                                                    }
+                                                }else{
+                                                    document.getElementById("un_combine_button_id").style.display = "none";
+                                                }
+
+                                                if(isFirst){
+                                                    status = document.getElementById("status_"+checkBoxes[i].value).value;
+                                                    stage = document.getElementById("stage_"+checkBoxes[i].value).value;
+                                                    gosOrgan = document.getElementById("gosOrgan_"+checkBoxes[i].value).value;
+                                                    isFirst = false;
+                                                }else{
+                                                    if(status!=document.getElementById("status_"+checkBoxes[i].value).value||stage!=document.getElementById("stage_"+checkBoxes[i].value).value||gosOrgan!=document.getElementById("gosOrgan_"+checkBoxes[i].value).value){
+                                                        showButton = false;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if(showButton&&countChecked>1){
+                                            document.getElementById("combine_button_id").style.display = "block";
+                                        }else{
+                                            document.getElementById("combine_button_id").style.display = "none";
+                                        }
+                                    }
+                                    function toCombine(){
+                                        if(confirm("Объединить выбранные процессы?")){
+                                            document.getElementById("process_list_form_id").submit();
+                                        }
+                                    }
+
+                                    function toUncombine(){
+                                        if(confirm("Разъединить выбранный процесс?")){
+                                            document.getElementById("process_list_form_id").action = "/secretary/uncombineprocess";
+                                            document.getElementById("uncombine_process_id").value = unCombineProcessId;
+                                            document.getElementById("process_list_form_id").submit();
+                                        }
+                                    }
+
+                                </script>
+                            </div>
+                            <div class="card-footer clearfix">
+                                <th:block th:each = "id : ${#numbers.sequence(1, pageCount)}">
+                                    <a class="btn btn-info btn-sm btn-flat" th:classappend="${id}==${#request.getParameter('page')} ? 'active': '' " th:href="@{/secretary/processlist(page=${id})}" th:text = "${id}"></a>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

@@ -1,0 +1,89 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layouts/main.html">
+    <div layout:fragment="content">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h3 class="m-0 text-dark"><small>Создать процесс</small></h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                            <li class="breadcrumb-item active">Создать процесс</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><span th:text = "${user.lastName}"></span></h5>
+                                <h5><span th:text = "${user.firstName}"></span></h5>
+                                <h5><span th:text = "${user.middleName}"></span></h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text mt-3">
+                                    <a th:href = "@{'/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>
+                                    Проект плана по бюджетной программе 005 "Заграничные командировки"
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-success alert-dismissible" th:if = "${#request.getParameter('success')!=null}">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                    <h5><i class="icon fas fa-check"></i> Процесс запущен</h5>
+                                </div>
+                                <form role="form" th:action="@{'/createprocess'}" method="post">
+                                    <div class="form-group">
+                                        <label>Лимит</label>
+                                        <input type="number" class="form-control" placeholder="Лимит" name="limit" min="0" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Валюта</label>
+                                        <select class="form-control" name="currency_id">
+                                            <option th:each = "cur: ${currencies}" th:value = "${cur.id}" th:text = "${cur.name}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Организация</label>
+                                        <select class="form-control" name="organization_id" id = "organization_id" onchange="toUpdateDepartmentList()">
+                                            <option value="0">Выберите Структуру</option>
+                                            <option th:each="org: ${organizations}" th:value = "${org.id}" th:utext = "${org.isMidRk==1? 'МИД РК: ' + org.name : 'ГО: ' + org.name}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Годы:</label>
+                                        <input type="number" name="first_year" class="form-control">
+                                        <br>
+                                        <input type="number" name="second_year" class="form-control">
+                                        <br>
+                                        <input type="number" name="third_year" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-flat btn-primary">Создать</button>
+                                    </div>
+                                    <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

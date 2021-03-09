@@ -1,0 +1,83 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small>Процессы</small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                        <li class="breadcrumb-item active">Процессы</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Список процессов</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="col-sm-12">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            Наименование процесса
+                                        </th>
+                                        <th>
+                                            Версия
+                                        </th>
+                                        <th>
+                                            Ресурс
+                                        </th>
+                                        <th>
+                                            Запустить
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id = "processList">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <script type="text/javascript">
+                                window.onload = function(){
+                                    table = "";
+                                    $.get("/api/camunda/tasks", {}, function (data) {
+                                        for(i=0;i<data.length;i++){
+                                            table+="<tr>";
+                                            table+="<td>";
+                                            table+=data[i].name;
+                                            table+="</td>";
+                                            table+="<td>";
+                                            table+=data[i].version;
+                                            table+="</td>";
+                                            table+="<td>";
+                                            table+=data[i].resource;
+                                            table+="</td>";
+                                            table+="<td>";
+                                            table+="<a href = \"/admin/startprocess/"+data[i].id+"\">Запустить</a>";
+                                            table+="</td>";
+                                            table+="</tr>";
+                                        }
+                                        $("#processList").html(table);
+                                    });
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

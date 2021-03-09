@@ -1,0 +1,454 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layouts/main.html">
+    <div layout:fragment="content">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h3 class="m-0 text-dark"><small>Главная страница</small></h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{'/zayavitelgo/businesstrips'}">Оформление
+                                паспорта</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{'/zayavitelgo/createpassportrequest'}">Заявление
+                                на паспорт</a></li>
+                            <li class="breadcrumb-item active">Заявление</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><span th:text = "${user.lastName}"></span></h5>
+                                <h5><span th:text = "${user.firstName}"></span></h5>
+                                <h5><span th:text = "${user.middleName}"></span></h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text mt-3">
+                                    <a th:href = "@{'/zayavitelgo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
+                                    <br>
+                                    <br>
+                                    <a th:href = "@{'/zayavitelgo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <h5>Заявление на заграничную командировку</h5>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <button class="btn btn-primary btn-flat btn-sm float-right"
+                                                onclick="savePassportRequest()">Сохранить
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body" style="height:500px;overflow:auto;">
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        Ф.И.О.
+                                                    </th>
+                                                    <th>
+                                                        Должность
+                                                    </th>
+                                                    <th>
+                                                        Гос. служащий
+                                                    </th>
+                                                    <th>
+                                                        Выездной
+                                                    </th>
+                                                    <th>
+                                                        Наличие долгов
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each = "usrData : ${userDataList}">
+                                                    <td>
+                                                        <span th:text = "${usrData.fioData}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span th:text = "${usrData.position}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span th:text = "${usrData.gosServant?'Да':'Нет'}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span th:text = "${usrData.abroadable?'Да':'Нет'}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span th:text = "${usrData.hasDebts?'Да':'Нет'}"></span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row mt-5">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Характер поездки</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control bg-light" readonly id="tripCharacterFieldId"
+                                               th:value="${passportRequest.businessTrip.tripCharacter}" name="trip_character"
+                                               placeholder="Характер поездки">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Цель визита</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input th:each="purpose : ${passportRequest.businessTrip.businessTripPurposes}" readonly type="text" class="form-control bg-light" name="trip_purpose"
+                                               th:value="${purpose.purpose}">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Основание</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control bg-light" readonly id="tripProofFieldId"
+                                               th:value="${passportRequest.businessTrip.businessTripProof}" name="trip_proof"
+                                               placeholder="Основание">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Маршрут</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control bg-light" readonly style="background-color: white;" th:if = "${#lists.isEmpty(businessTripRouteDataList)}">
+                                        <div th:each = "routeData : ${businessTripRouteDataList}" style="margin-bottom: 5px;">
+                                            <input type="text" class="form-control bg-light" readonly style="background-color: white;" th:value = "${routeData.businessTripRoute.routeName}">
+                                            <div class="row mt-2">
+                                                <div class="col-sm-4">
+                                                    <label class="mt-1">Период</label>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <input type="text" readonly style="background-color: white;" class="form-control" th:value = "${'С ' + #dates.format(routeData.dateFrom, 'dd-MM-yyyy') + ', ' + routeData.timeFrom + ' по ' + #dates.format(routeData.dateTo, 'dd-MM-yyyy') + ' ' + routeData.timeTo}">
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-4">
+                                                    <label class="mt-1">Количество дней</label>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <input type="number" class="form-control" th:value = "${routeData.daysAmount}" th:id = "${'routeDataDays' + routeData.id}">
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-12">
+                                                    <input type="checkbox" onclick="return false" style="margin-right:10px;" th:id = "${'routeDataDaily' + routeData.id}" th:checked = "${routeData.daily}">
+                                                    <label>Суточные</label>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-12">
+                                                    <input type="checkbox" onclick="return false" style="margin-right:10px;" th:id = "${'routeDataOneDay' + routeData.id}" th:checked = "${routeData.oneDay}">
+                                                    <label>Один день</label>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-12">
+                                                    <input type="checkbox" onclick="return false" style="margin-right:10px;" th:id = "${'routeDataResidence' + routeData.id}" th:checked = "${routeData.residence}">
+                                                    <label>Проживание</label>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-12">
+                                                    <input type="checkbox" onclick="return false" style="margin-right:10px;" th:id = "${'routeDataTransport' + routeData.id}" th:checked = "${routeData.transport}">
+                                                    <label>Транспорт</label>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label>Города посещения</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div th:each="cit : ${passportRequest.businessTrip.businessTripCities}"
+                                             style="margin-bottom: 5px;">
+                                            <div class="row">
+                                                <div class="col-lg-11">
+                                                    <input type="text" class="form-control bg-light" readonly
+                                                           style="background-color: white;" th:value="${cit.cityName}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <input type="checkbox" onclick="return false" value="true" style="margin-right:10px;" id = "officialPresidentDelegationCheckBoxId" th:checked = "${passportRequest.businessTrip.isOfficialDelegationWithPresident}">
+                                        <label>Официальная поездка делегации во главе Президента</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <input type="checkbox" onclick="return false" value="true" style="margin-right:10px;" id = "inviterExpenseCheckBoxId" th:checked = "${passportRequest.businessTrip.isAtTheExpenseOfInvitingParty}">
+                                        <label>За счёт средств приглашающей стороны</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <input type="checkbox" onclick="return false" value="true" style="margin-right:10px;" id = "visaCheckBoxId" th:checked = "${passportRequest.businessTrip.isVisa}">
+                                        <label>Виза</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Обоснование сроков нахождения</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <textarea style="width: 100%;" rows="5" placeholder="Не менее 1000 символов" class="form-control"
+                                                  id="tripTermProofFieldId" th:text = "${passportRequest.businessTrip.businessTripTermProof}" name="trip_proof"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Забронированные билеты</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Загрузить</span>
+                                            </div>
+                                            <div class="custom-file">
+<!--                                                <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" id="inputGroupFile01">-->
+<!--                                                <label class="custom-file-label" for="inputGroupFile01">Выберите файл</label>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Тип паспорта</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" name="passport_type" id="passportTypeSelectorId">
+                                            <option value="1" th:selected = "${passportRequest.businessTrip.passportType == 1}">Дипломатический</option>
+                                            <option value="2" th:selected = "${passportRequest.businessTrip.passportType == 2}">Служебный</option>
+                                            <option value="3" th:selected = "${passportRequest.businessTrip.passportType == 3}">Обычный</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Название программы: </label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="checkbox" onclick="return false" value="true"  class="mr-1 mt-1" id = "isForeign005CheckBoxId" th:checked = "${passportRequest.businessTrip.isForeign005}">
+                                        <label class="mt-1">005 «Заграничные командировки»</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Выбор мероприятий: </label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input readonly type="radio" onclick="return false"  value="true" th:checked="${passportRequest.businessTrip.isEventPlan != null && passportRequest.businessTrip.isEventPlan}" class="mr-1 mt-2" name="plan_choice_name" id = "by_plan_id">
+                                        <label class="mt-1">«По плану мероприятий»</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-6 offset-3">
+                                        <input type="radio" readonly onclick="return false" value="true" th:checked="${passportRequest.businessTrip.isEventPlan != null && !passportRequest.businessTrip.isEventPlan}" class="mr-1 mt-2" name="plan_choice_name" id = "by_without_plan_id">
+                                        <label class="mt-1">«Вне плана мероприятий»</label>
+                                    </div>
+                                </div>
+                                <div id = "by_without_plan_div_id" th:style="${passportRequest.businessTrip.isEventPlan == null || passportRequest.businessTrip.isEventPlan ? 'display : none;' : 'display : block;'}">
+                                    <div class="row mt-3">
+                                        <div class="col-sm-3">
+                                            <label class="mt-1">Обоснование</label>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <textarea style="width: 100%;"  rows="5" placeholder="Не менее 1000 символов" class="form-control"
+                                                      id="withoutEventProofFieldId" th:text = ${passportRequest.businessTrip.withoutEventProof} name="without_event_proof"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-sm-8 offset-3">
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Загрузить</span>
+                                                </div>
+                                                <div class="custom-file">
+                                                    <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" name="proof_file">
+                                                    <label class="custom-file-label">Выберите файл</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:style="${passportRequest.businessTrip.isEventPlan == null || !passportRequest.businessTrip.isEventPlan ? 'display : none;' : 'display : block;'}"  id="by_plan_div_id">
+                                    <div class="row mt-3">
+                                        <div class="col-sm-3">
+                                            <label class="mt-1">Выбор плана мероприятии</label>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <table class="table" style="width:100%;">
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="2">
+                                                            Организация
+                                                        </th>
+                                                        <th>
+                                                            Дата запуска
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr th:each="mainProcess : ${mainProcesses}">
+                                                    <td>
+                                                        <input th:checked="${passportRequest.businessTrip.process!=null && passportRequest.businessTrip.process.id == mainProcess.id}"
+                                                               type="radio" name="plan_id"
+                                                               th:id="'event-' + ${mainProcess.id}"
+                                                               th:onclick="'chooseProcess(this,' + ${mainProcess.organization.id} + ')'">
+                                                    </td>
+                                                    <td th:text=${mainProcess.organization.name}>
+                                                    </td>
+                                                    <td th:text=${mainProcess.createdAt}>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Политический исполнитель</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input th:if="${passportRequest.businessTrip.executor != null}" readonly
+                                               type="text" class="form-control bg-light"
+                                               th:value="${passportRequest.businessTrip.executor.firstName} + ' ' + ${passportRequest.businessTrip.executor.middleName}">
+                                    </div>
+                                </div>
+                                <div th:if="${passportRequest.businessTrip.attachment6Created != null}">
+                                    <a href="#">Приказ</a>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Фото 3х4</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Загрузить</span>
+                                            </div>
+                                            <div class="custom-file">
+                                                <label class="custom-file-label" for="photo3x4FileInputId">Выберите файл</label>
+                                                <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" id="photo3x4FileInputId">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3" th:if="${passportRequest.photo3x4File != null}">
+                                    <div class="col-sm-2 offset-3">
+                                        <a class="btn btn-primary btn-sm"
+                                           th:href="@{'/downloadphoto3x4/' + ${passportRequest.photo3x4File}}">Скачать фото 3х4</a>
+                                    </div>
+                                    <div class="col-1">
+                                        <form th:action="@{'/removephoto3x4file'}" method="post">
+                                            <input type="hidden" name="passport_request_id" th:value="${passportRequest.id}">
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm"><i
+                                                    class="far fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Удостоверение личности</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Загрузить</span>
+                                            </div>
+                                            <div class="custom-file">
+                                                <label class="custom-file-label" for="udsFileInputId">Выберите файл</label>
+                                                <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" id="udsFileInputId">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3" th:if="${passportRequest.udsFile != null}">
+                                    <div class="col-sm-2 offset-3">
+                                        <a class="btn btn-primary btn-sm"
+                                           th:href="@{'/downloaduds/' + ${passportRequest.udsFile}}">Скачать удостоверение личности</a>
+                                    </div>
+                                    <div class="col-1">
+                                        <form th:action="@{'/removeudsfile'}" method="post">
+                                            <input type="hidden" name="passport_request_id" th:value="${passportRequest.id}">
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm"><i
+                                                    class="far fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <form hidden enctype="multipart/form-data" th:action="${'/zayavitelgo/savepassportrequest'}"
+                                  method="post"
+                                  id="saveBusinessTripFormId">
+                                <input type="hidden" name="passport_request_id" th:value="${passportRequest.id}">
+                                <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" name="photo3x4_file" id="photo3x4FileId">
+                                <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" name="uds_file" id="udsFileId">
+                            </form>
+                            <script type="text/javascript">
+                                function savePassportRequest() {
+                                    photo3x4 = document.getElementById("photo3x4FileInputId").files;
+                                    udsFile = document.getElementById("udsFileInputId").files;
+
+                                    document.getElementById("photo3x4FileId").files = photo3x4;
+                                    document.getElementById("udsFileId").files = udsFile;
+
+                                    document.getElementById("saveBusinessTripFormId").submit();
+                                }
+                                document.querySelector('#photo3x4FileInputId').addEventListener('change',function(e){
+                                    var fileName = e.target.files[0].name;
+                                    var nextSibling = e.target.previousElementSibling
+                                    nextSibling.innerText = fileName
+                                })
+
+                                document.querySelector('#udsFileInputId').addEventListener('change',function(e){
+                                    var fileName = e.target.files[0].name;
+                                    var nextSibling = e.target.previousElementSibling
+                                    nextSibling.innerText = fileName
+                                })
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

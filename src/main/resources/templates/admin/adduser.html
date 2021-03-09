@@ -1,0 +1,115 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h3 class="m-0 text-dark"><small>Добавить пользователя</small></h3>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+            <li class="breadcrumb-item"><a th:href="@{'/admin/listusers'}">Пользователи</a></li>
+            <li class="breadcrumb-item active">Добавить пользователя</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              <h5>Добавить пользователя</h5>
+            </div>
+            <div class="card-body">
+              <div class="col-sm-6 offset-3">
+                <form th:action="@{'/admin/adduser'}" method="post">
+                  <div class="alert alert-success alert-dismissible" th:if = "${#request.getParameter('success')!=null}">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h5><i class="icon fas fa-check"></i>Пользователь добавлен успешно!</h5>
+                  </div>
+                  <div class="alert alert-danger alert-dismissible" th:if = "${#request.getParameter('error')!=null}">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h5><i class="icon fas fa-ban"></i>Ошибка при добавлении пользователя!</h5>
+                  </div>
+                  <label>
+                    Имя пользователя
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Логин" name="user_login">
+                  </div>
+                  <label>
+                    Имя
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Имя" name="firstname">
+                  </div>
+                  <label>
+                    Фамилия
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Фамилия" name="lastname">
+                  </div>
+                  <label>
+                    Отчество
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Отчество" name="middlename">
+                  </div>
+                  <label>
+                    E-mail
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="E-mail" name="email">
+                  </div>
+                  <label th:text = "#{label.password}">
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="password" class="form-control" placeholder="Пароль" name="user_password">
+                  </div>
+                  <label>
+                    Подтвердите пароль
+                  </label>
+                  <div class="input-group mb-3">
+                    <input type="password" class="form-control" placeholder="Подтвердите пароль" name="re_user_password">
+                  </div>
+                  <label>
+                    Роль
+                  </label>
+                  <div class="input-group mb-3">
+                    <select class="form-control" name="group_id">
+                      <option th:each="group: ${groups}" th:value = "${group.id}" th:utext = "${group.name}">
+                      </option>
+                    </select>
+                  </div>
+                  <label>
+                    Департамент
+                  </label>
+                  <div class="input-group mb-3">
+                    <select class="form-control" name="department_id" id = "department_id">
+                      <option value="0">Выберите Департамент</option>
+                      <option th:each="dept: ${departments}" th:value = "${dept.id}" th:utext = "${dept.name}">
+                      </option>
+                    </select>
+                  </div>
+                  <div class="row">
+                    <div class="col-4 offset-8">
+                      <button type="submit" class="btn btn-primary btn-block btn-flat float-right">Создать</button>
+                    </div>
+                  </div>
+                  <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</html>

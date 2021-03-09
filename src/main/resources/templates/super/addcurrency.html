@@ -1,0 +1,70 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small th:text = "#{label.addCurrencyText}"></small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}" th:text = "#{label.mainPage}"></a></li>
+                        <li class="breadcrumb-item"><a th:href="@{'/super/listcurrencies'}" th:text = "#{label.listCurrencies}"></a></li>
+                        <li class="breadcrumb-item active" th:text = "#{label.addCurrencyText}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 th:text = "#{label.addCurrencyText}"></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="col-sm-6 offset-3">
+                                <form th:action="@{'/super/addcurrency'}" method="post">
+                                    <label th:text = "#{label.currencyName}">
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" th:placeholder="#{label.currencyName}" name="name">
+                                    </div>
+                                    <label th:text = "#{label.currencySymbol}">
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" th:placeholder="#{label.currencySymbol}" name="symbol">
+                                    </div>
+                                    <label th:text = "#{label.buyCurrency}">
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" th:placeholder="#{label.buyCurrency}" name="tenge_buy_ratio">
+                                    </div>
+                                    <label th:text = "#{label.sellCurrency}">
+                                    </label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" th:placeholder="#{label.sellCurrency}" name="tenge_cell_ratio">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 offset-8">
+                                            <button type="submit" class="btn btn-primary btn-block btn-flat float-right" th:text = "#{label.add}"></button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+
+

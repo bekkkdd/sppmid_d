@@ -1,0 +1,90 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layouts/main.html">
+    <div layout:fragment="content">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h3 class="m-0 text-dark"><small th:text = "#{label.profile.edit}"></small></h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{'/'}" th:text = "#{label.mainPage}"></a></li>
+                            <li class="breadcrumb-item active" th:text = "#{label.profile.edit}"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 th:text = "#{label.profile.edit}"></h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="col-sm-6 offset-3">
+                                    <div class="alert alert-danger alert-dismissible" th:if = "${#request.getParameter('error')!=null}">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <h5><i class="icon fas fa-ban" th:text = "#{label.incorrectPassword}"></i>Н</h5>
+                                    </div>
+                                    <div class="alert alert-success alert-dismissible" th:if = "${#request.getParameter('success')!=null}">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <h5><i class="icon fas fa-check" th:text = "#{label.successChangedPassword}"></i></h5>
+                                    </div>
+                                    <form>
+                                        <label th:text = "#{label.iin}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" readonly style="background-color: white" th:value="${user.login}">
+                                        </div>
+                                        <label th:text = "#{label.firstname}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" readonly style="background-color: white" th:value="${user.firstName}">
+                                        </div>
+                                        <label th:text = "#{label.lastname}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" readonly style="background-color: white" th:value="${user.lastName}">
+                                        </div>
+                                        <label th:text = "#{label.middlename}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" readonly style="background-color: white" th:value="${user.middleName}">
+                                        </div>
+                                    </form>
+                                    <form th:action="@{'/updatepassword'}" method="post">
+                                        <label th:text = "#{label.oldPassword}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="password" class="form-control" th:placeholder="#{label.oldPassword}" name="user_old_password">
+                                        </div>
+                                        <label th:text = "#{label.newPassword}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="password" class="form-control" th:placeholder="#{label.newPassword}" name="user_new_password">
+                                        </div>
+                                        <label th:text = "#{label.newRepassword}">
+                                        </label>
+                                        <div class="input-group mb-4">
+                                            <input type="password" class="form-control" th:placeholder="#{label.newRepassword}" name="re_user_new_password">
+                                        </div>
+                                        <div class="input-group mb-3">
+                                            <button type="submit" class="btn btn-primary btn-block btn-flat float-right" th:text = "#{label.changePassword}"></button>
+                                        </div>
+                                        <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

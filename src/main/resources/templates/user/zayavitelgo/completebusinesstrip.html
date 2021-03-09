@@ -1,0 +1,803 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layouts/main.html">
+    <div layout:fragment="content">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h3 class="m-0 text-dark"><small>Главная страница</small></h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{'/zayavitelgo/businesstrips'}">Оформление на командировку</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{'/zayavitelgo/createbusinesstrip'}">Заявление на командирование</a></li>
+                            <li class="breadcrumb-item active">Заявление</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><span th:text = "${user.lastName}"></span></h5>
+                                <h5><span th:text = "${user.firstName}"></span></h5>
+                                <h5><span th:text = "${user.middleName}"></span></h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text mt-3">
+                                    <a th:href = "@{'/zayavitelgo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
+                                    <br>
+                                    <br>
+                                    <a th:href = "@{'/zayavitelgo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <h5>Заявление на заграничную командировку</h5>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <button class="btn btn-primary btn-flat btn-sm float-right" onclick="saveBusinessTrip()">Сохранить</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body" style="height:500px;overflow:auto;">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <button class="btn btn-flat btn-success btn-sm" data-toggle="modal" data-target=".bd-adduser-modal-lg">+ Добавить участника</button>
+                                    </div>
+                                    <div class="col-sm-10">
+
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        Ф.И.О.
+                                                    </th>
+                                                    <th>
+                                                        Должность
+                                                    </th>
+                                                    <th>
+                                                        Гос. служащий
+                                                    </th>
+                                                    <th>
+                                                        Выездной
+                                                    </th>
+                                                    <th>
+                                                        Наличие долгов
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each = "usrData : ${userDataList}">
+                                                    <td>
+                                                        <span th:text = "${usrData.fioData}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span th:text = "${usrData.position}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span th:text = "${usrData.gosServant?'Да':'Нет'}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span th:text = "${usrData.abroadable?'Да':'Нет'}"></span>
+                                                    </td>
+                                                    <td>
+                                                        <span th:text = "${usrData.hasDebts?'Да':'Нет'}"></span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row mt-5">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Характер поездки</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="tripCharacterFieldId"
+                                               th:value="${businessTrip.tripCharacter}" name="trip_character"
+                                               placeholder="Характер поездки">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Цель визита</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input th:each="purpose : ${businessTrip.businessTripPurposes}" readonly type="text" class="form-control bg-light" name="trip_purpose"
+                                               th:value="${purpose.purpose}">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Основание</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="tripProofFieldId"
+                                               th:value="${businessTrip.businessTripProof}" name="trip_proof"
+                                               placeholder="Основание">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Маршрут</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" readonly style="background-color: white;" th:if = "${#lists.isEmpty(businessTripRouteDataList)}">
+                                        <div th:each = "routeData : ${businessTripRouteDataList}" style="margin-bottom: 5px;">
+                                            <input type="text" class="form-control" readonly style="background-color: white;" th:value = "${routeData.businessTripRoute.routeName}">
+                                            <div class="row mt-2">
+                                                <div class="col-sm-4">
+                                                    <label class="mt-1">Период</label>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <input type="text" readonly style="background-color: white;" class="form-control" th:value = "${'С ' + #dates.format(routeData.dateFrom, 'dd-MM-yyyy') + ', ' + routeData.timeFrom + ' по ' + #dates.format(routeData.dateTo, 'dd-MM-yyyy') + ' ' + routeData.timeTo}">
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-4">
+                                                    <label class="mt-1">Количество дней</label>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <input type="number" class="form-control" th:value = "${routeData.daysAmount}" th:id = "${'routeDataDays' + routeData.id}">
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-12">
+                                                    <input type="checkbox" style="margin-right:10px;" th:id = "${'routeDataDaily' + routeData.id}" th:checked = "${routeData.daily}">
+                                                    <label>Суточные</label>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-12">
+                                                    <input type="checkbox" style="margin-right:10px;" th:id = "${'routeDataOneDay' + routeData.id}" th:checked = "${routeData.oneDay}">
+                                                    <label>Один день</label>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-12">
+                                                    <input type="checkbox" style="margin-right:10px;" th:id = "${'routeDataResidence' + routeData.id}" th:checked = "${routeData.residence}">
+                                                    <label>Проживание</label>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-12">
+                                                    <input type="checkbox" style="margin-right:10px;" th:id = "${'routeDataTransport' + routeData.id}" th:checked = "${routeData.transport}">
+                                                    <label>Транспорт</label>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-12">
+                                                    <button class="btn btn-danger btn-flat btn-sm float-right ml-2" th:onclick = "'toDeleteRoute('+${routeData.id}+')'">Удалить маршрут</button>
+                                                    <button class="btn btn-primary btn-flat btn-sm float-right" th:onclick = "'toSaveRoute('+${routeData.id}+')'">Сохранить маршрут</button>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <button class="btn btn-flat btn-success btn-sm" type="button" data-toggle="modal" data-target=".bd-addroute-modal-lg">+</button>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label>Города посещения</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" readonly style="background-color: white;" th:if = "${#lists.isEmpty(businessTrip.businessTripCities)}">
+                                        <div th:each="cit : ${businessTrip.businessTripCities}"
+                                             style="margin-bottom: 5px;">
+                                            <div class="row">
+                                                <div class="col-lg-11">
+                                                    <input type="text" class="form-control" readonly
+                                                           style="background-color: white;" th:value="${cit.cityName}">
+                                                </div>
+                                                <div class="col-lg-1">
+                                                    <button class="btn btn-danger btn-sm mt-1"
+                                                            th:onclick="'toDeleteCity('+${cit.id}+')'"><i
+                                                            class="far fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-1 float-right" th:if = "${!#lists.isEmpty(businessTrip.businessTripCities)}">
+<!--                                            <input type="text" class="form-control" readonly style="background-color: white;" th:if = "${!#lists.isEmpty(businessTrip.businessTripCities)}">-->
+                                            <button class="btn btn-flat btn-success btn-sm" type="button"
+                                                    data-toggle="modal" data-target=".bd-addcity-modal-lg">+
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <form th:action="@{'/zayavitelgo/deletecityfrombusinesstrip'}" method="post"
+                                          id="deleteCityFromBusinessTrip">
+                                        <input type="hidden" name="business_trip_id" th:value="${businessTrip.id}">
+                                        <input type="hidden" name="city_id" id="deleteCityId">
+                                    </form>
+
+                                    <div class="col-sm-1" th:if = "${#lists.isEmpty(businessTrip.businessTripCities)}">
+                                        <button class="btn btn-flat btn-success btn-sm" type="button"
+                                                data-toggle="modal" data-target=".bd-addcity-modal-lg">+
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <input type="checkbox" value="true" style="margin-right:10px;" id = "officialPresidentDelegationCheckBoxId" th:checked = "${businessTrip.isOfficialDelegationWithPresident}">
+                                        <label>Официальная поездка делегации во главе Президента</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <input type="checkbox" value="true" style="margin-right:10px;" id = "inviterExpenseCheckBoxId" th:checked = "${businessTrip.isAtTheExpenseOfInvitingParty}">
+                                        <label>За счёт средств приглашающей стороны</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-12">
+                                        <input type="checkbox" value="true" style="margin-right:10px;" id = "visaCheckBoxId" th:checked = "${businessTrip.isVisa}">
+                                        <label>Виза</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Обоснование сроков нахождения</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <textarea style="width: 100%;" rows="5" placeholder="Не менее 1000 символов" class="form-control"
+                                                  id="tripTermProofFieldId" th:text = "${businessTrip.businessTripTermProof}" name="trip_proof"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Забронированные билеты</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Загрузить</span>
+                                            </div>
+                                            <div class="custom-file">
+                                                <label class="custom-file-label" for="ticketFileInputId">Выберите файл</label>
+                                                <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input" id="ticketFileInputId">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3" th:if="${businessTrip.ticketFile != null}">
+                                    <div class="col-sm-2 offset-3">
+                                        <a class="btn btn-primary btn-sm"
+                                           th:href="@{'/downloadticket/' + ${businessTrip.ticketFile}}">Скачать билеты</a>
+                                    </div>
+                                    <div class="col-1">
+                                        <form th:action="@{'/removeticketfile'}" method="post">
+                                            <input type="hidden" name="business_trip_id" th:value="${businessTrip.id}">
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm"><i
+                                                    class="far fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Тип паспорта</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <select class="form-control" name="passport_type" id="passportTypeSelectorId">
+                                            <option value="1" th:selected = "${businessTrip.passportType == 1}">Дипломатический</option>
+                                            <option value="2" th:selected = "${businessTrip.passportType == 2}">Служебный</option>
+                                            <option value="3" th:selected = "${businessTrip.passportType == 3}">Обычный</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Название программы: </label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="checkbox" value="true"  class="mr-1 mt-1" id = "isForeign005CheckBoxId" th:checked = "${businessTrip.isForeign005}">
+                                        <label class="mt-1">005 «Заграничные командировки»</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Выбор мероприятий: </label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input type="radio" value="true"
+                                               th:checked="${businessTrip.isEventPlan != null && businessTrip.isEventPlan}"
+                                               class="mr-1 mt-2" name="plan_choice_name" id="by_plan_id"
+                                               onclick="chooseByPlan()">
+                                        <label class="mt-1">«По плану мероприятий»</label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-6 offset-3">
+                                        <input type="radio" value="true"
+                                               th:checked="${businessTrip.isEventPlan != null && !businessTrip.isEventPlan}"
+                                               class="mr-1 mt-2" name="plan_choice_name" id="by_without_plan_id"
+                                               onclick="chooseByPlan()">
+                                        <label class="mt-1">«Вне плана мероприятий»</label>
+                                    </div>
+                                </div>
+                                <div id="by_without_plan_div_id"
+                                     th:style="${businessTrip.isEventPlan == null || businessTrip.isEventPlan ? 'display : none;' : 'display : block;'}">
+                                    <div class="row mt-3">
+                                        <div class="col-sm-3">
+                                            <label class="mt-1">Обоснование</label>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <textarea style="width: 100%;" rows="5" placeholder="Не менее 1000 символов"
+                                                      class="form-control"
+                                                      id="withoutEventProofFieldId"
+                                                      th:text=${businessTrip.withoutEventProof}
+                                                      name="without_event_proof"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-sm-8 offset-3">
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Загрузить</span>
+                                                </div>
+                                                <div class="custom-file">
+                                                    <label class="custom-file-label" id="proofFileInputLabelId">Выберите
+                                                        файл</label>
+                                                    <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" class="custom-file-input proof" name="proof_file"
+                                                           id="proofFileInputId">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3" th:if="${businessTrip.proofFile != null}">
+                                        <div class="col-sm-2 offset-3">
+                                            <a class="btn btn-primary btn-sm"
+                                               th:href="@{'/downloadwithouteventproof/' + ${businessTrip.proofFile}}">Скачать обоснование</a>
+                                        </div>
+                                        <div class="col-1">
+                                            <form th:action="@{'/removewithouteventprooffile'}" method="post">
+                                                <input type="hidden" name="business_trip_id" th:value="${businessTrip.id}">
+                                                <button type="submit"
+                                                        class="btn btn-danger btn-sm"><i
+                                                        class="far fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div th:style="${businessTrip.isEventPlan == null || !businessTrip.isEventPlan ? 'display : none;' : 'display : block;'}"  id="by_plan_div_id">
+                                    <div class="row mt-3">
+                                        <div class="col-sm-3">
+                                            <label class="mt-1">Выбор плана мероприятии</label>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <table class="table" style="width:100%;">
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="2">
+                                                            Организация
+                                                        </th>
+                                                        <th>
+                                                            Дата запуска
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr th:each="mainProcess : ${mainProcesses}">
+                                                    <td>
+                                                        <input th:checked="${businessTrip.process!=null && businessTrip.process.id == mainProcess.id}"
+                                                               type="radio" name="plan_id"
+                                                               th:id="'event-' + ${mainProcess.id}"
+                                                               th:onclick="'chooseProcess(this,' + ${mainProcess.organization.id} + ')'">
+                                                    </td>
+                                                    <td th:text=${mainProcess.organization.name}>
+                                                    </td>
+                                                    <td th:text=${mainProcess.createdAt}>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <form th:action="@{'/zayavitelgo/saveroutedata'}" method="post" id="routeDataFromId">
+                                    <input type="hidden" name="businessTripId" th:value="${businessTrip.id}">
+                                    <input type="hidden" name="routeDataId" id="routeDataId">
+                                    <input type="hidden" name="routeDataDays" id="routeDataDaysId">
+                                    <input type="hidden" name="routeDataDaily" id="routeDataDailyId">
+                                    <input type="hidden" name="routeDataOneDay" id="routeDataOneDayId">
+                                    <input type="hidden" name="routeDataResidence" id="routeDataResidenceId">
+                                    <input type="hidden" name="routeDataTransport" id="routeDataTransportId">
+                                </form>
+                                <form th:action="@{'/zayavitelgo/deleteroutefrombusinesstrip'}" method="post"
+                                      id="deleteRouteFromBusinessTrip">
+                                    <input type="hidden" name="business_trip_id" th:value="${businessTrip.id}">
+                                    <input type="hidden" name="route_id" id="deleteRouteDataId">
+                                </form>
+
+                                <div class="row mt-3">
+                                    <div class="col-sm-3">
+                                        <label class="mt-1">Политический исполнитель</label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input th:if="${businessTrip.executor != null}" readonly type="text" class="form-control bg-light"
+                                               th:value="${businessTrip.executor.firstName} + ' ' + ${businessTrip.executor.middleName}">
+                                    </div>
+                                </div>
+                                <div th:if="${businessTrip.attachment6Created != null}">
+                                    <a href="#">Приказ</a>
+                                </div>
+                                <script type="text/javascript">
+
+                                    document.querySelector('#proofFileInputId').addEventListener('change',function(e){
+                                        var fileName = e.target.files[0].name;
+                                        var nextSibling = e.target.previousElementSibling
+                                        nextSibling.innerText = fileName
+                                    })
+
+                                    document.querySelector('#ticketFileInputId').addEventListener('change',function(e){
+                                        var fileName = e.target.files[0].name;
+                                        var nextSibling = e.target.previousElementSibling
+                                        nextSibling.innerText = fileName
+                                    })
+
+                                    function chooseByPlan() {
+                                        if (document.getElementById("by_without_plan_id").checked) {
+                                            document.getElementById("by_without_plan_div_id").style.display = "block";
+                                            document.getElementById("by_plan_div_id").style.display = "none";
+                                            document.getElementById("isEventPlanId").value = false;
+                                        } else {
+                                            document.getElementById("by_without_plan_div_id").style.display = "none";
+                                            document.getElementById("by_plan_div_id").style.display = "block";
+                                            document.getElementById("isEventPlanId").value = true;
+                                        }
+                                    }
+
+                                    function chooseProcess(radio, organizationId) {
+                                        document.getElementById('planProcessIdId').value = radio.id.replace('event-', '')
+                                        document.getElementById('organizationId').value = organizationId
+                                    }
+
+                                    function toDeleteRoute(id) {
+                                        document.getElementById("deleteRouteDataId").value = id;
+                                        document.getElementById("deleteRouteFromBusinessTrip").submit()
+                                    }
+
+                                    function toDeleteCity(id) {
+                                        document.getElementById("deleteCityId").value = id;
+                                        document.getElementById("deleteCityFromBusinessTrip").submit()
+                                    }
+
+                                    function toSaveRoute(id) {
+
+                                        days = document.getElementById("routeDataDays" + id).value;
+                                        isDaily = document.getElementById("routeDataDaily" + id).checked;
+                                        isOneDay = document.getElementById("routeDataOneDay" + id).checked;
+                                        isResidence = document.getElementById("routeDataResidence" + id).checked;
+                                        isTransport = document.getElementById("routeDataTransport" + id).checked;
+
+                                        document.getElementById("routeDataId").value = id;
+                                        document.getElementById("routeDataDaysId").value = days;
+                                        document.getElementById("routeDataDailyId").value = (isDaily?true:false);
+                                        document.getElementById("routeDataOneDayId").value = (isOneDay?true:false);
+                                        document.getElementById("routeDataResidenceId").value = (isResidence?true:false);
+                                        document.getElementById("routeDataTransportId").value = (isTransport?true:false);
+
+                                        document.getElementById("routeDataFromId").submit();
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade bd-adduser-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Введите ИИН</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form th:action="@{'/zayavitelgo/addusertobusinesstrip'}" method="post">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" placeholder="ИИН участника" id = "user_iin">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <div class="row">
+                                                        <button class="btn btn-flat btn-primary" type="button" onclick="loadIntegration()">Проверить данные &#128270;</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-5">
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Ф.И.О:
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <span id = "fioDataId"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Должность:
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <span id = "positionId"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Гос служащий:
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <span id = "isGosServantId"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Выездной:
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <span id = "isAbroadableId"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-sm-4">
+                                                    <label>
+                                                        Наличие долгов:
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <span id = "hasDebtsId"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-flat btn-success" disabled id = "addUserButtonId" >Добавить участника</button>
+                                        </div>
+                                        <input type="hidden" name="iin" id = "userDataIINId">
+                                        <input type="hidden" name="businessTripId" th:value="${businessTrip.id}">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade bd-addroute-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Выберите маршрут</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form th:action="@{'/zayavitelgo/addroutetobusinesstrip'}" method="post">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label>Маршрут: </label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <select class="form-control" name="routeId">
+                                                        <option th:each = "route : ${businessTripRoutes}" th:text = "${route.routeName}" th:value = "${route.id}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row mt-3">
+                                                <div class="col-sm-12">
+                                                    <label>Дата и время маршрута: </label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <label>С</label>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label>По</label>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <input type="date" class="form-control" name="routeDateFrom">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="time" class="form-control" name="routeTimeFrom">
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="date" class="form-control" name="routeDateTo">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="time" class="form-control" name="routeTimeTo">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-flat btn-success">Добавить маршрут</button>
+                                        </div>
+                                        <input type="hidden" name="businessTripId" th:value="${businessTrip.id}">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade bd-addcity-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Выберите город</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form th:action="@{'/zayavitelgo/addcitytobusinesstrip'}" method="post">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <select class="form-control" name="cityId">
+                                                        <option th:each = "cit : ${businessTripCities}" th:text = "${cit.cityName}" th:value = "${cit.id}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-flat btn-success">Добавить город</button>
+                                        </div>
+                                        <input type="hidden" name="businessTripId" th:value="${businessTrip.id}">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form hidden enctype="multipart/form-data" th:action="${'/zayavitelgo/savebusinesstrip'}" method="post"
+                          id="saveBusinessTripFormId">
+                        <input type="hidden" name="businessTripId" th:value="${businessTrip.id}">
+                        <input type="hidden" name="official_president_delegation" id="officialPresidentId">
+                        <input type="hidden" name="inviter_expense" id="inviterExpenseId">
+                        <input type="hidden" name="visa" id="visaId">
+                        <input type="hidden" name="trip_character" id="tripCharacterId">
+                        <input type="hidden" name="trip_proof" id="tripProofId">
+                        <input type="hidden" name="trip_term_proof" id="tripTermProofId">
+                        <input type="hidden" name="passport_type" id="passportTypeId">
+                        <input type="hidden" name="is_foreign_005" id="isForeign005Id">
+                        <input type="hidden" name="is_event_plan" id="isEventPlanId"
+                               th:value="${businessTrip.isEventPlan}">
+                        <input type="hidden" name="without_event_proof" id="withoutEventProofId">
+                        <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" name="proof_file" id="proofFileId">
+                        <input type="file" accept = "application/pdf,application/vnd.ms-excel,application/msword" name="ticket_file" id="ticketFileId">
+                        <input required type="hidden" name="plan_process_id" id="planProcessIdId">
+                        <input required type="hidden" name="organization" id="organizationId">
+                    </form>
+                    <script type="text/javascript">
+
+                        function saveBusinessTrip() {
+                            isOfficialPresident = document.getElementById("officialPresidentDelegationCheckBoxId").checked;
+                            isInviterExpense = document.getElementById("inviterExpenseCheckBoxId").checked;
+                            isVisa = document.getElementById("visaCheckBoxId").checked;
+                            tripCharacter = document.getElementById("tripCharacterFieldId").value
+                            tripProof = document.getElementById("tripProofFieldId").value
+                            tripTermProof = document.getElementById("tripTermProofFieldId").value
+                            passportType = document.getElementById("passportTypeSelectorId").value
+                            isForeign005 = document.getElementById("isForeign005CheckBoxId").checked;
+                            withoutEventProof = document.getElementById("withoutEventProofFieldId").value;
+                            proofFile = document.getElementById("proofFileInputId").files;
+                            ticketFile = document.getElementById("ticketFileInputId").files;
+
+                            document.getElementById("officialPresidentId").value = isOfficialPresident;
+                            document.getElementById("inviterExpenseId").value = isInviterExpense;
+                            document.getElementById("visaId").value = isVisa;
+                            document.getElementById("tripCharacterId").value = tripCharacter;
+                            document.getElementById("tripProofId").value = tripProof;
+                            document.getElementById("tripTermProofId").value = tripTermProof;
+                            document.getElementById("passportTypeId").value = passportType;
+                            document.getElementById("isForeign005Id").value = isForeign005;
+                            document.getElementById("withoutEventProofId").value = withoutEventProof;
+                            document.getElementById("proofFileId").files = proofFile;
+                            document.getElementById("ticketFileId").files = ticketFile;
+
+                            document.getElementById("saveBusinessTripFormId").submit();
+                        }
+                        
+                        function loadIntegration() {
+
+                            $("#addUserButtonId").attr("disabled", "disabled");
+                            activeButton = false;
+
+                            iin = $("#user_iin").val();
+
+                            $.post("/api/integration/loaduser/"+iin, {}, function(resp){
+
+                                if(resp=="OK"){
+
+                                    $.post("/api/integration/gettempuser/"+iin, {}, function (resp) {
+
+                                        if(resp!="ERROR"){
+
+                                            activeButton = true;
+
+                                            if(resp.fioData!=null){
+                                                $("#fioDataId").html(resp.fioData);
+                                            }else{
+                                                $("#fioDataId").html("отсутствует");
+                                                activeButton = false;
+                                            }
+
+                                            if(resp.position!=null){
+                                                $("#positionId").html(resp.position);
+                                            }else{
+                                                $("#positionId").html("отсутствует");
+                                                activeButton = false;
+                                            }
+
+                                            if(resp.gosServant){
+                                                $("#isGosServantId").html("Да");
+                                            }else{
+                                                $("#isGosServantId").html("Нет");
+                                            }
+
+                                            if(resp.abroadable){
+                                                $("#isAbroadableId").css("color","green");
+                                                $("#isAbroadableId").html("Да");
+                                            }else{
+                                                $("#isAbroadableId").css("color","red");
+                                                $("#isAbroadableId").html("Нет");
+                                                activeButton = false;
+                                            }
+
+                                            if(resp.hasDebts){
+                                                $("#hasDebtsId").css("color","red");
+                                                $("#hasDebtsId").html("Да");
+                                                activeButton = false;
+                                            }else{
+                                                $("#hasDebtsId").css("color","green");
+                                                $("#hasDebtsId").html("Нет");
+                                            }
+
+                                            if(activeButton){
+                                                $("#addUserButtonId").removeAttr("disabled", "disabled");
+                                                $("#userDataIINId").val(iin);
+                                            }
+
+                                        }else{
+
+                                            $("#fioDataId").html("отсутствует");
+                                            $("#positionId").html("отсутствует");
+                                            $("#isGosServantId").html("");
+                                            $("#isAbroadableId").html("");
+                                            $("#hasDebtsId").html("");
+
+                                        }
+                                    });
+                                }
+                            });
+
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

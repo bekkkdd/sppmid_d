@@ -1,0 +1,81 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+<!--                    th:text = "#{}"-->
+                    <h3 class="m-0 text-dark"><small th:text = "#{label.table.detail}"></small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}" th:text = "#{label.mainPage}"></a></li>
+                        <li class="breadcrumb-item"><a th:href="@{'/super/listcurrencies'}" th:text = "#{label.listCurrencies}"></a></li>
+                        <li class="breadcrumb-item active" th:text = "#{label.currencyDetails}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title" th:text = "#{label.currencyDetails}"></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6 offset-3">
+                                    <form th:action="@{'/super/updatecurrency'}" method="post">
+                                        <input type="hidden" name="id" th:value = "${currency.id}">
+                                        <label th:text = "#{label.currencyName}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" th:placeholder="#{label.currencyName}" name="name" th:value="${currency.name}">
+                                        </div>
+                                        <label th:text = "#{label.currencySymbol}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" th:placeholder="#{label.currencySymbol}" name="symbol" th:value="${currency.symbol}">
+                                        </div>
+                                        <label th:text = "#{label.buyCurrency}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" th:placeholder="#{label.buyCurrency}" name="tenge_buy_ratio" th:value="${currency.tengeBuyRatio}">
+                                        </div>
+                                        <label th:text = "#{label.sellCurrency}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" th:placeholder="#{label.sellCurrency}" name="tenge_sell_ratio" th:value="${currency.tengeSellRatio}">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-4 offset-8">
+                                                <button type="submit" class="btn btn-primary btn-block btn-flat float-right" th:text = "#{label.update}"></button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                    </form>
+                                    <br>
+
+                                    <form th:action="@{'/super/removecurrency'}" method="post">
+                                        <div class="row">
+                                            <div class="col-4 offset-8">
+                                                <input type="hidden" name="id" th:value = "${currency.id}">
+                                                <button type="submit" class="btn btn-danger btn-block btn-flat float-left" th:text = "#{label.removeCurrency}"></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,112 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small>Процессы</small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{'/admin/listprocess'}">Процессы</a></li>
+                        <li class="breadcrumb-item active">Запуск процесса</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card mb-5 pb-5">
+                        <div class="card-body">
+                            <h5 class="card-title">Запуск процесса</h5>
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-6 offset-3">
+                                        <form id = "result">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+
+                                labelMap = [];
+                                labelMap["name"] = "Имя";
+                                labelMap["surname"] = "Фамилия";
+                                labelMap["middlename"] = "Отчество";
+                                labelMap["restDays"] = "Выезд намечен сроком на (дней)";
+                                labelMap["position"] = "Должность";
+                                labelMap["character"] = "Характер поездки";
+                                labelMap["visitPurpose"] = "Цель визита";
+                                labelMap["base"] = "Основание";
+                                labelMap["route"] = "Маршрут";
+                                labelMap["visitCities"] = "Города посещения";
+                                labelMap["officialVisit"] = "Официальная поездка делегации во главе Президента";
+
+                                window.onload = function(){
+                                    form = "";
+                                    $.get("/api/camunda/prepare/process/[[${processId}]]", {}, function (data) {
+                                        text = JSON.parse(data);
+                                        propertyNames = Object.keys(text);
+                                        for(i=0;i<propertyNames.length;i++){
+                                            type = "text";
+                                            if(text[propertyNames[i]].type==="String"){
+                                                type = "text";
+                                            }else if(text[propertyNames[i]].type==="Long"){
+                                                type = "number";
+                                            }else if(text[propertyNames[i]].type==="Boolean"){
+                                                type = "checkbox";
+                                            }
+
+                                            value = text[propertyNames[i]].value;
+                                            form+="<label>"+labelMap[propertyNames[i]]+"</label>";
+                                            form+="<div class=\"input-group mb-3\">"
+                                            form+="<input type = \""+type+"\" "+(type!="checkbox"?"class = \"form-control\"":"")+" name = \""+propertyNames[i]+"\" value=\""+value+"\">";
+                                            form+="</div>";
+                                        }
+                                        form+="<button type = \"button\" class=\"btn btn-success btn-sm\" onclick=\"executeProcess()\">Создать процесс</button>";
+                                        $("#result").html(form);
+                                    });
+                                }
+
+                                function executeProcess() {
+                                    jsonObj = getFormData($("#result"));
+                                    $.ajax("/api/camunda/execute/process/[[${processId}]]", {
+                                        type: 'post',
+                                        data: JSON.stringify(jsonObj),
+                                        contentType: "application/json; charset=utf-8",
+                                        dataType: "json",
+                                        success: function(resp){
+                                            console.log(resp);
+                                        },
+                                        error: function(resp){
+                                            console.log(resp);
+                                        }
+                                    });
+                                }
+
+                                function getFormData($form){
+                                    var unindexed_array = $form.serializeArray();
+                                    var indexed_array = {};
+
+                                    $.map(unindexed_array, function(n, i){
+                                        indexed_array[n['name']] = n['value'];
+                                    });
+
+                                    return indexed_array;
+                                }
+
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

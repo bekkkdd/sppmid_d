@@ -1,0 +1,642 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layouts/main.html">
+    <div layout:fragment="content">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h3 class="m-0 text-dark"><small>Создать процесс</small></h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{'/zayavitelgo/processlist'}">План мероприятий</a></li>
+                            <li class="breadcrumb-item active">Детали процесса</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><span th:text = "${user.lastName}"></span></h5>
+                                <h5><span th:text = "${user.firstName}"></span></h5>
+                                <h5><span th:text = "${user.middleName}"></span></h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text mt-3">
+                                    <a th:href = "@{'/zayavitelgo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
+                                    <br>
+                                    <br>
+                                    <a th:href = "@{'/zayavitelgo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>
+                                    Проект плана по бюджетной программе 005 "Заграничные командировки"
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form role="form" th:action="@{'/zayavitelgo/executesign'}" method="post">
+                                    <input type="hidden" name="processId" th:value = "${process.id}">
+                                    <input type="hidden" name="action" value="sign">
+                                    <div class="form-group" th:if="${process.stage==6&&process.status==1&&process.isDeclined==1}">
+                                        <label style="color:#a51e28; ">Отправлено на доработку</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Годы:</label>
+                                        <input type="number" class="form-control" th:value="${process.firstYear}" readonly style="background-color: white;">
+                                        <br>
+                                        <input type="number" class="form-control" th:value="${process.secondYear}" readonly style="background-color: white;">
+                                        <br>
+                                        <input type="number" class="form-control" th:value="${process.thirdYear}" readonly style="background-color: white;">
+                                    </div>
+                                    <div class="form-group" th:if="${process.stage==6&&process.status==1&&process.isDeclined==1}">
+                                        <label>Комментарии</label>
+                                        <textarea class="form-control" style="width: 100%; min-height: 100px; background-color: white;" readonly th:text="${process.comment}"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Состояние процесса</label>
+                                        <label style="display: block;" type="text">
+                                            <input type="text" class="form-control" readonly th:value = "${process.stageName}" style="background-color: white; ">
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Пользователь</label>
+                                        <label style="display: block;" type="text">
+                                            <input type="text" class="form-control" readonly th:value = "${process.stageRole}" style="background-color: white; ">
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Статус</label>
+                                        <input type="text" class="form-control" readonly th:value = "${process.statusText}" style="background-color: white; ">
+                                    </div>
+                                    <div class="form-group">
+                                        <table class="table table-bordered" style="width: 100%; font-size: 14px;">
+                                            <thead class="thead-light" style="text-align: center;">
+                                            <tr>
+                                                <th rowspan="3">
+                                                    No:
+                                                </th>
+                                                <th rowspan="3">
+                                                    Наименование мероприятия
+                                                </th>
+                                                <th rowspan="3">
+                                                    Страна проведения
+                                                </th>
+                                                <th rowspan="3">
+                                                    Сроки проведения
+                                                </th>
+                                                <th rowspan="3">
+                                                    Кол-во участников
+                                                </th>
+                                                <th rowspan="3">
+                                                    Кол-во дней
+                                                </th>
+                                                <th colspan="4">
+                                                    <span class="custom-control-inline">
+                                                        <label class="custom-control-inline">Сумма затрат </label>
+                                                        <select class="form-control" onchange="setCurrency()" id = "currency_id">
+                                                            <option th:each="curr:${currencies}" th:value = "${curr.id}" th:text = "${curr.name}" th:selected = "${currency.id==curr.id}">
+                                                            </option>
+                                                        </select>
+                                                    </span>
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <th rowspan="2">
+                                                    Всего
+                                                </th>
+                                                <th colspan="3">
+                                                    в том числе
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    Суточные расходы
+                                                </th>
+                                                <th>
+                                                    Расходы на проживание
+                                                </th>
+                                                <th>
+                                                    Транспортные расходы
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    1
+                                                </th>
+                                                <th>
+                                                    2
+                                                </th>
+                                                <th>
+                                                    3
+                                                </th>
+                                                <th>
+                                                    4
+                                                </th>
+                                                <th>
+                                                    5
+                                                </th>
+                                                <th>
+                                                    6
+                                                </th>
+                                                <th>
+                                                    7
+                                                </th>
+                                                <th>
+                                                    8
+                                                </th>
+                                                <th>
+                                                    9
+                                                </th>
+                                                <th>
+                                                    10
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td></td>
+                                                <td colspan="9" style="font-weight: bold;">
+                                                    Наименование государственного органа/учреждения: <span th:text = "${process.gosOrganization.name}"></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td colspan="9" style="font-weight: bold;">
+                                                    Лимит <span th:text = "${process.limitValue}"></span> <span th:text = "${currency.name}"></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td colspan="9" style="font-weight: bold;">
+                                                    Наименование Департамента/структурного подразделения :
+                                                    <span th:text="${process.department!=null?process.department.name:'Не назначено'}"></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <button type="button" class="btn btn-flat btn-success btn-sm" style="width: 100%;" data-toggle="modal" data-target=".bd-official-modal-xl" th:if = "${(process.stage==6)&&process.status==1}">+</button>
+                                                </td>
+                                                <td colspan="9" style="font-weight: bold;">1. Официальные и рабочие визиты делегаций</td>
+                                            </tr>
+                                            <div>
+                                                <tr th:each="sect: ${process.sectionData}" th:if="${sect.sectionType==1}" style="text-align: center;">
+                                                    <td>
+                                                        <button class="btn btn-danger btn-flat btn-sm" style="width: 100%;" type="button" th:onclick="'removeSectionData('+${sect.id}+')'" th:if = "${(process.stage==6)&&process.status==1}">-</button>
+                                                    </td>
+                                                    <td th:text = "${sect.name}" style="text-align: left;"></td>
+                                                    <td th:text = "${sect.country}"></td>
+                                                    <td>
+                                                        <span th:text = "${sect.limitTimeFrom}"></span>
+                                                        <br>
+                                                        <span th:text = "${sect.limitTimeTo}"></span>
+                                                    </td>
+                                                    <td th:text = "${sect.participantAmount}"></td>
+                                                    <td th:text = "${sect.daysAmount}"></td>
+                                                    <td th:text = "${sect.dailyExpences + sect.residenceExpences + sect.fareExpences}"></td>
+                                                    <td th:text = "${sect.dailyExpences}"></td>
+                                                    <td th:text = "${sect.residenceExpences}"></td>
+                                                    <td th:text = "${sect.fareExpences}"></td>
+                                                </tr>
+                                                <tr style="text-align: center; background-color: rgba(42,56,8,0.07);">
+                                                    <td></td>
+                                                    <td style="text-align: left;">Итого по разделу</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==1].![participantAmount])}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==1].![daysAmount])}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==1].![dailyExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==1].![dailyExpences]):0} + ${#aggregates.sum(process.sectionData.?[sectionType==1].![residenceExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==1].![residenceExpences]):0} + ${#aggregates.sum(process.sectionData.?[sectionType==1].![fareExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==1].![fareExpences]):0}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==1].![dailyExpences])}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==1].![residenceExpences])}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==1].![fareExpences])}"></td>
+                                                </tr>
+                                            </div>
+                                            <tr>
+                                                <td><button type="button" class="btn btn-flat btn-success btn-sm" style="width: 100%;" data-toggle="modal" data-target=".bd-conference-modal-xl" th:if = "${(process.stage==6)&&process.status==1}">+</button></td>
+                                                <td colspan="9" style="font-weight: bold;">2. Участие в международных конференциях, семинарах, форумах и т.п. </td>
+                                            </tr>
+                                            <tr th:each="sect: ${process.sectionData}" th:if="${sect.sectionType==2}" style="text-align: center;">
+                                                <td>
+                                                    <button class="btn btn-danger btn-flat btn-sm" style="width: 100%;" type="button" th:onclick="'removeSectionData('+${sect.id}+')'" th:if = "${(process.stage==6)&&process.status==1}">-</button>
+                                                </td>
+                                                <td th:text = "${sect.name}" style="text-align: left;"></td>
+                                                <td th:text = "${sect.country}"></td>
+                                                <td>
+                                                    <span th:text = "${sect.limitTimeFrom}"></span>
+                                                    <br>
+                                                    <span th:text = "${sect.limitTimeTo}"></span>
+                                                </td>
+                                                <td th:text = "${sect.participantAmount}"></td>
+                                                <td th:text = "${sect.daysAmount}"></td>
+                                                <td th:text = "${sect.dailyExpences + sect.residenceExpences + sect.fareExpences}"></td>
+                                                <td th:text = "${sect.dailyExpences}"></td>
+                                                <td th:text = "${sect.residenceExpences}"></td>
+                                                <td th:text = "${sect.fareExpences}"></td>
+                                            </tr>
+                                            <tr style="text-align: center;  background-color: rgba(42,56,8,0.07);">
+                                                <td>
+                                                </td>
+                                                <td style="text-align: left;">Итого по разделу</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==2].![participantAmount])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==2].![daysAmount])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==2].![dailyExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==2].![dailyExpences]):0} + ${#aggregates.sum(process.sectionData.?[sectionType==2].![residenceExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==2].![residenceExpences]):0} + ${#aggregates.sum(process.sectionData.?[sectionType==2].![fareExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==2].![fareExpences]):0}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==2].![dailyExpences])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==2].![residenceExpences])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==2].![fareExpences])}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <button type="button" class="btn btn-flat btn-success btn-sm" data-toggle="modal" data-target=".bd-zasedaniya-modal-xl" th:if = "${(process.stage==6)&&process.status==1}">+</button>
+                                                </td>
+                                                <td colspan="9" style="font-weight: bold;">3. Участие в заседаниях МПК</td>
+                                            </tr>
+                                            <tr th:each="sect: ${process.sectionData}" th:if="${sect.sectionType==3}" style="text-align: center;">
+                                                <td>
+                                                    <button class="btn btn-danger btn-flat btn-sm" style="width: 100%;" type="button" th:onclick="'removeSectionData('+${sect.id}+')'" th:if = "${(process.stage==6)&&process.status==1}">-</button>
+                                                </td>
+                                                <td th:text = "${sect.name}" style="text-align: left;"></td>
+                                                <td th:text = "${sect.country}"></td>
+                                                <td>
+                                                    <span th:text = "${sect.limitTimeFrom}"></span>
+                                                    <br>
+                                                    <span th:text = "${sect.limitTimeTo}"></span>
+                                                </td>
+                                                <td th:text = "${sect.participantAmount}"></td>
+                                                <td th:text = "${sect.daysAmount}"></td>
+                                                <td th:text = "${sect.dailyExpences + sect.residenceExpences + sect.fareExpences}"></td>
+                                                <td th:text = "${sect.dailyExpences}"></td>
+                                                <td th:text = "${sect.residenceExpences}"></td>
+                                                <td th:text = "${sect.fareExpences}"></td>
+                                            </tr>
+                                            <tr style="text-align: center;  background-color: rgba(42,56,8,0.07);">
+                                                <td></td>
+                                                <td style="text-align: left;">Итого по разделу</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==3].![participantAmount])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==3].![daysAmount])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==3].![dailyExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==3].![dailyExpences]):0} + ${#aggregates.sum(process.sectionData.?[sectionType==3].![residenceExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==3].![residenceExpences]):0} + ${#aggregates.sum(process.sectionData.?[sectionType==3].![fareExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==3].![fareExpences]):0}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==3].![dailyExpences])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==3].![residenceExpences])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==3].![fareExpences])}"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <button type="button" class="btn btn-flat btn-success btn-sm" data-toggle="modal" data-target=".bd-prochie-modal-xl" th:if = "${(process.stage==6)&&process.status==1}">+</button>
+                                                </td>
+                                                <td colspan="9" style="font-weight: bold;">4. Прочие мероприятия, не включенные в другие разделы</td>
+                                            </tr>
+                                            <div>
+                                                <tr th:each="sect: ${process.sectionData}" th:if="${sect.sectionType==4}" style="text-align: center;">
+                                                    <td>
+                                                        <button class="btn btn-danger btn-flat btn-sm" style="width: 100%;" type="button" th:onclick="'removeSectionData('+${sect.id}+')'" th:if = "${(process.stage==6)&&process.status==1}">-</button>
+                                                    </td>
+                                                    <td th:text = "${sect.name}" style="text-align: left;"></td>
+                                                    <td th:text = "${sect.country}"></td>
+                                                    <td>
+                                                        <span th:text = "${sect.limitTimeFrom}"></span>
+                                                        <br>
+                                                        <span th:text = "${sect.limitTimeTo}"></span>
+                                                    </td>
+                                                    <td th:text = "${sect.participantAmount}"></td>
+                                                    <td th:text = "${sect.daysAmount}"></td>
+                                                    <td th:text = "${sect.dailyExpences + sect.residenceExpences + sect.fareExpences}"></td>
+                                                    <td th:text = "${sect.dailyExpences}"></td>
+                                                    <td th:text = "${sect.residenceExpences}"></td>
+                                                    <td th:text = "${sect.fareExpences}"></td>
+                                                </tr>
+                                                <tr style="text-align: center;  background-color: rgba(42,56,8,0.07);">
+                                                    <td></td>
+                                                    <td style="text-align: left;">Итого по разделу</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==4].![participantAmount])}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==4].![daysAmount])}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==4].![dailyExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==4].![dailyExpences]):0} + ${#aggregates.sum(process.sectionData.?[sectionType==4].![residenceExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==4].![residenceExpences]):0} + ${#aggregates.sum(process.sectionData.?[sectionType==4].![fareExpences])!=null?#aggregates.sum(process.sectionData.?[sectionType==4].![fareExpences]):0}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==4].![dailyExpences])}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==4].![residenceExpences])}"></td>
+                                                    <td th:text = "${#aggregates.sum(process.sectionData.?[sectionType==4].![fareExpences])}"></td>
+                                                </tr>
+                                            </div>
+                                            <tr style="font-weight: bold; text-align: center;">
+                                                <td></td>
+                                                <td style="text-align: left;">ВСЕГО:</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.![participantAmount])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.![daysAmount])}"></td>
+                                                <td th:style = "${limitExceeded?'color:red;':''}" th:text = "${#aggregates.sum(process.sectionData.![dailyExpences])!=null?#aggregates.sum(process.sectionData.![dailyExpences]):0} + ${#aggregates.sum(process.sectionData.![residenceExpences])!=null?#aggregates.sum(process.sectionData.![residenceExpences]):0} + ${#aggregates.sum(process.sectionData.![fareExpences])!=null?#aggregates.sum(process.sectionData.![fareExpences]):0}"></td>                                                <td th:text = "${#aggregates.sum(process.sectionData.![dailyExpences])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.![residenceExpences])}"></td>
+                                                <td th:text = "${#aggregates.sum(process.sectionData.![fareExpences])}"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="form-group" th:if="${process.stage==6&&process.status==1}">
+                                        <button class="btn btn-flat btn-primary" data-toggle="modal" data-target=".bd-example-modal-xl">Подписать и Отправить</button>
+                                    </div>
+                                    <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                </form>
+                            </div>
+                        </div>
+
+                        <form th:action = "@{'/zayavitelgo/removesectiondata'}" method="post" id = "remove_section_data">
+                            <input type="hidden" name="processId"  th:value="${process.id}">
+                            <input type="hidden" name="sectionId" id = "section_id">
+                        </form>
+                        <script type="text/javascript">
+                            function removeSectionData(id){
+                                if(confirm("Вы уверены что хотите удалить мероприятие?")){
+                                    document.getElementById("section_id").value = id;
+                                    document.getElementById("remove_section_data").submit();
+                                }
+                            }
+                        </script>
+                        <form th:action = "@{'/zayavitelgo/setcurrency'}" method="post" id="currency_set_form_id">
+                            <input type="hidden" name="currency_id" id = "currency_id_value">
+                            <input type="hidden" name="process_id" th:value = "${process.id}">
+                        </form>
+                        <script type="text/javascript">
+                            function setCurrency(){
+                                document.getElementById("currency_id_value").value = document.getElementById("currency_id").value;
+                                document.getElementById("currency_set_form_id").submit();
+                            }
+                        </script>
+
+                        <!-- 1. Официальные и рабочие визиты делегаций -->
+                        <div class="modal fade bd-official-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Официальные и рабочие визиты делегаций</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form th:action="@{'/zayavitelgo/addsectiondata'}" method="post" th:if="${(process.stage==6)&&process.status==1}">
+                                            <input type="hidden" name="processId" th:value = "${process.id}">
+                                            <input type="hidden" name="type" value="1">
+                                            <div class="form-group">
+                                                <label>Наименование мероприятия</label>
+                                                <input type="text" class="form-control" name="name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Страна проведения</label>
+                                                <input type="text" class="form-control" name="country">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Сроки проведения</label>
+                                                <div class="row">
+                                                    <div class="col-sm-2">
+                                                        <input type="date" class="form-control" name="limitTimeFrom">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input type="date" class="form-control" name="limitTimeTo">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Кол-во участников</label>
+                                                <input type="number" class="form-control" name="participantAmount" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Кол-во дней</label>
+                                                <input type="number" class="form-control" name="daysAmount" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Валюта затрат</label>
+                                                <select class="form-control" name="currency_id">
+                                                    <option th:each = "cur: ${currencies}" th:value = "${cur.id}" th:text = "${cur.name}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Суточные расходы</label>
+                                                <input type="number" class="form-control" name="dailyExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Расходы на проживание</label>
+                                                <input type="number" class="form-control" name="residenceExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Транспортные расходы</label>
+                                                <input type="number" class="form-control" name="fareExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <button class="btn btn-flat btn-success">Добавить</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 2. Участие в международных конференциях, семинарах, форумах и т.п. -->
+                        <div class="modal fade bd-conference-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Участие в международных конференциях, семинарах, форумах и т.п.</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form th:action="@{'/zayavitelgo/addsectiondata'}" method="post" th:if="${(process.stage==6)&&process.status==1}">
+                                            <input type="hidden" name="processId" th:value = "${process.id}">
+                                            <input type="hidden" name="type" value="2">
+                                            <div class="form-group">
+                                                <label>Наименование мероприятия</label>
+                                                <input type="text" class="form-control" name="name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Страна проведения</label>
+                                                <input type="text" class="form-control" name="country">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Сроки проведения</label>
+                                                <div class="row">
+                                                    <div class="col-sm-2">
+                                                        <input type="date" class="form-control" name="limitTimeFrom">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input type="date" class="form-control" name="limitTimeTo">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Кол-во участников</label>
+                                                <input type="number" class="form-control" name="participantAmount" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Кол-во дней</label>
+                                                <input type="number" class="form-control" name="daysAmount" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Валюта затрат</label>
+                                                <select class="form-control" name="currency_id">
+                                                    <option th:each = "cur: ${currencies}" th:value = "${cur.id}" th:text = "${cur.name}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Суточные расходы</label>
+                                                <input type="number" class="form-control" name="dailyExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Расходы на проживание</label>
+                                                <input type="number" class="form-control" name="residenceExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Транспортные расходы</label>
+                                                <input type="number" class="form-control" name="fareExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <button class="btn btn-flat btn-success">Добавить</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Участие в заседаниях МПК -->
+                        <div class="modal fade bd-zasedaniya-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Участие в заседаниях МПК</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form th:action="@{'/zayavitelgo/addsectiondata'}" method="post" th:if="${(process.stage==6)&&process.status==1}">
+                                            <input type="hidden" name="processId" th:value = "${process.id}">
+                                            <input type="hidden" name="type" value="3">
+                                            <div class="form-group">
+                                                <label>Наименование мероприятия</label>
+                                                <input type="text" class="form-control" name="name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Страна проведения</label>
+                                                <input type="text" class="form-control" name="country">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Сроки проведения</label>
+                                                <div class="row">
+                                                    <div class="col-sm-2">
+                                                        <input type="date" class="form-control" name="limitTimeFrom">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input type="date" class="form-control" name="limitTimeTo">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Кол-во участников</label>
+                                                <input type="number" class="form-control" name="participantAmount" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Кол-во дней</label>
+                                                <input type="number" class="form-control" name="daysAmount" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Валюта затрат</label>
+                                                <select class="form-control" name="currency_id">
+                                                    <option th:each = "cur: ${currencies}" th:value = "${cur.id}" th:text = "${cur.name}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Суточные расходы</label>
+                                                <input type="number" class="form-control" name="dailyExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Расходы на проживание</label>
+                                                <input type="number" class="form-control" name="residenceExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Транспортные расходы</label>
+                                                <input type="number" class="form-control" name="fareExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <button class="btn btn-flat btn-success">Добавить</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 4. Прочие мероприятия, не включенные в другие разделы -->
+                        <div class="modal fade bd-prochie-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-xl" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Прочие мероприятия, не включенные в другие разделы</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form th:action="@{'/zayavitelgo/addsectiondata'}" method="post" th:if="${(process.stage==6)&&process.status==1}">
+                                            <input type="hidden" name="processId" th:value = "${process.id}">
+                                            <input type="hidden" name="type" value="4">
+                                            <div class="form-group">
+                                                <label>Наименование мероприятия</label>
+                                                <input type="text" class="form-control" name="name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Страна проведения</label>
+                                                <input type="text" class="form-control" name="country">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Сроки проведения</label>
+                                                <div class="row">
+                                                    <div class="col-sm-2">
+                                                        <input type="date" class="form-control" name="limitTimeFrom">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <input type="date" class="form-control" name="limitTimeTo">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Кол-во участников</label>
+                                                <input type="number" class="form-control" name="participantAmount" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Кол-во дней</label>
+                                                <input type="number" class="form-control" name="daysAmount" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Валюта затрат</label>
+                                                <select class="form-control" name="currency_id">
+                                                    <option th:each = "cur: ${currencies}" th:value = "${cur.id}" th:text = "${cur.name}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Суточные расходы</label>
+                                                <input type="number" class="form-control" name="dailyExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Расходы на проживание</label>
+                                                <input type="number" class="form-control" name="residenceExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Транспортные расходы</label>
+                                                <input type="number" class="form-control" name="fareExpences" min="0" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <button class="btn btn-flat btn-success">Добавить</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

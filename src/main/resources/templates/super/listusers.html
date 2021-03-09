@@ -1,0 +1,76 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small th:text = "#{label.listUsers}"></small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}" th:text = "#{label.mainPage}"></a></li>
+                        <li class="breadcrumb-item active" th:text = "#{label.listUsers}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title" th:text = "#{label.listUsers}"></h3>
+                            <div class="card-tools">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <a th:href = "@{'/super/adduser/'}"  class="btn btn-flat btn-success btn-sm" th:text = "#{label.addUser}">
+                            </a>
+                            <br>
+                            <br>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th th:text = "#{label.iin}">
+                                    </th>
+                                    <th th:text = "#{label.role}">
+                                        Роль
+                                    </th>
+                                    <th th:text = "#{label.organization}">
+                                    </th>
+                                    <th>
+                                        Департамент
+                                    </th>
+                                    <th th:text = "#{label.table.detail}">
+                                        Детали
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="usr: ${users}">
+                                    <td th:text = "${usr.login}"></td>
+                                    <td th:text = "${usr.group.name}"></td>
+                                    <td th:text = "${usr.department.organization.isMidRk==1? 'МИД РК: ' + usr.department.organization.name: 'МИД РК: ' + usr.department.organization.name}"></td>
+                                    <td th:text = "${usr.department.name}"></td>
+                                    <td><a th:href="@{'/super/details/' + ${usr.id}}" class="btn btn-info btn-sm" th:text = "#{label.table.detail}"></a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer clearfix">
+                            <th:block th:each = "id : ${#numbers.sequence(1, pageCount)}">
+                                <a class="btn btn-info btn-sm btn-flat" th:classappend="${id}==${#request.getParameter('page')} ? 'active': '' " th:href="@{/super/listusers(page=${id})}" th:text = "${id}"></a>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+

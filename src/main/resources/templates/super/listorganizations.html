@@ -1,0 +1,104 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small th:text = "#{label.organizations}"></small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}" th:text = "#{label.mainPage}"></a></li>
+                        <li class="breadcrumb-item active" th:text = "#{label.organizations}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title" th:text = "#{label.listOrganizations}"></h3>
+                            <div class="card-tools">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <a th:href = "@{'/super/addorganization/'}" class="btn btn-flat btn-success btn-sm" th:text = "#{label.addOrganization}">
+                            </a>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th th:text = "#{label.table.title}">
+                                    </th>
+                                    <th style="width: 10%;" th:text = "#{label.table.type}">
+                                    </th>
+                                    <th style="width: 5%;" th:text = "#{label.table.detail}">
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="org: ${organizations}">
+                                    <td th:text = "${org.name}"></td>
+                                    <td th:text = "${org.isMidRk == 1 ? 'МИД РК' : 'Гос Орган'}"></td>
+                                    <td><a th:href="@{'/super/organizationdetails/' + ${org.id}}" class="btn btn-info btn-sm" th:text = "#{label.table.detail}"></a></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer clearfix">
+                            <th:block th:each = "id : ${#numbers.sequence(1, pageCount)}">
+                                <a class="btn btn-info btn-sm btn-flat" th:classappend="${id}==${#request.getParameter('page')} ? 'active': '' " th:href="@{/super/listorganizations(page=${id})}" th:text = "${id}"></a>
+                            </th:block>
+                        </div>
+                    </div>
+<!--                    <div class="modal fade bd-adddepartment-modal-xl" tabindex="-1" role="dialog" aria-hidden="true">-->
+<!--                        <div class="modal-dialog modal-lg">-->
+<!--                            <div class="modal-content">-->
+<!--                                <div class="modal-header">-->
+<!--                                    <h5 class="modal-title" th:text = "#{label.addOrganizationText}"></h5>-->
+<!--                                </div>-->
+<!--                                <div class="modal-body">-->
+<!--                                    <div class="alert alert-success alert-dismissible" th:if = "${#request.getParameter('success')!=null}">-->
+<!--                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>-->
+<!--                                        <h5 th:text = "#{label.successAddingOrg}"><i class="icon fas fa-check"></i></h5>-->
+<!--                                    </div>-->
+<!--                                    <div class="alert alert-danger alert-dismissible" th:if = "${#request.getParameter('error')!=null}">-->
+<!--                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>-->
+<!--                                        <h5 th:text = "#{label.failureAddingOrg}"><i class="icon fas fa-ban"></i></h5>-->
+<!--                                    </div>-->
+<!--                                    <form th:action="@{'/super/addorganization'}" method="post">-->
+<!--                                        <label class="col-sm-12" th:text = "#{label.organizationName}">-->
+<!--                                        </label>-->
+<!--                                        <div class="input-group mb-3 col-sm-12">-->
+<!--                                            <input type="text" class="form-control" placeholder="Название" name="organization_name">-->
+<!--                                        </div>-->
+<!--                                        <div class="input-group mb-3 col-sm-12">-->
+<!--                                            <div class="form-check form-check-inline">-->
+<!--                                                <input class="form-check-input" type="radio" name="checkboxName" value=0>-->
+<!--                                                <label class="form-check-label">Гос орган</label>-->
+<!--                                            </div>-->
+<!--                                            <div class="form-check form-check-inline">-->
+<!--                                                <input class="form-check-input" type="radio" name="checkboxName" value=1>-->
+<!--                                                <label class="form-check-label">МИД РК</label>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                        <div class="input-group mb-3 col-sm-12">-->
+<!--                                            <button type="submit" class="btn btn-primary btn-flat float-right" th:text = "#{label.add}"></button>-->
+<!--                                        </div>-->
+<!--                                        <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>-->
+<!--                                    </form>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,96 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorator="layouts/main.html">
+    <div layout:fragment="content">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h3 class="m-0 text-dark"><small>Главная страница</small></h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{'/'}">Главная</a></li>
+                            <li class="breadcrumb-item active">Оформление на командировку</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><span th:text = "${user.lastName}"></span></h5>
+                                <h5><span th:text = "${user.firstName}"></span></h5>
+                                <h5><span th:text = "${user.middleName}"></span></h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text mt-3">
+                                    <a th:href = "@{'/supervisorvfd/advanceaccounts'}" class="btn btn-flat btn-primary" style="width: 100%;">Авансовые счета</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Авансовые счета</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Характер поездки
+                                            </th>
+                                            <th>
+                                                Заявитель
+                                            </th>
+                                            <th>
+                                                Департамент
+                                            </th>
+                                            <th>
+                                                Ожидает
+                                            </th>
+                                            <th>
+                                                Просмотр
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <form th:action = "@{'/supervisorvfd/combineadvanceaccount'}" method="post" id = "process_list_form_id">
+                                            <tr th:each="advanceAccount: ${advanceAccounts}">
+                                                <td th:text = "${advanceAccount.businessTrip.tripCharacter}">
+                                                </td>
+                                                <td th:text = "${advanceAccount.businessTrip.creator.firstName} + ' ' + ${advanceAccount.businessTrip.creator.lastName}">
+                                                </td>
+                                                <td th:text = "${advanceAccount.businessTrip.creator.firstName}">
+                                                </td>
+                                                <td th:text = "${T(kz.bitlab.robygroup.sppmid.core.config.StaticConfig).advanceAccountStageRoles.get(advanceAccount.stage)}">
+                                                </td>
+                                                <td>
+                                                    <a th:href="@{'/supervisorvfd/readadvanceaccount/' + ${advanceAccount.id}}" class="btn btn-info btn-sm">Детали</a></td>
+                                                </td>
+                                            </tr>
+                                            <input type="hidden" name="uncombine_process_id" id="uncombine_process_id">
+                                        </form>
+                                    </tbody>
+                                </table>
+                                <br>
+                            </div>
+                            <div class="card-footer clearfix">
+                                <th:block th:each = "id : ${#numbers.sequence(1, pageCount)}">
+                                    <a class="btn btn-info btn-sm btn-flat" th:classappend="${id}==${#request.getParameter('page')} ? 'active': '' " th:href="@{/supervisorvfd/processlist(page=${id})}" th:text = "${id}"></a>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

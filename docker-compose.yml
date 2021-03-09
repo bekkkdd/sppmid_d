@@ -1,0 +1,31 @@
+version: '3'
+services:
+
+  postgres:
+    image: postgres:9.6-alpine
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${CONF_DATA_SOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${CONF_DATA_SOURCE_PASSWORD}
+      POSTGRES_DB: ${CONF_DATA_SOURCE_DB}
+
+  sppmid:
+    build: ./
+    image: sppmid:latest
+    links:
+      - postgres
+    expose:
+      - 8001
+    ports:
+      - 8001:8001
+    depends_on:
+      - postgres
+    environment:
+      DATA_SOURCE_URL: ${CONF_DATA_SOURCE_URL}
+      DATA_SOURCE_USERNAME: ${CONF_DATA_SOURCE_USERNAME}
+      DATA_SOURCE_PASSWORD: ${CONF_DATA_SOURCE_PASSWORD}
+volumes:
+  db_data: {}

@@ -1,0 +1,134 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/main.html">
+<div layout:fragment="content">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h3 class="m-0 text-dark"><small th:text = "#{label.roleDetail}"></small></h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{'/'}" th:text = "#{label.mainPage}"></a></li>
+                        <li class="breadcrumb-item"><a th:href="@{'/super/listgroups'}" th:text = "#{label.rolesList}"></a></li>
+                        <li class="breadcrumb-item active" th:text = "#{label.roleDetail}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text = "#{label.roleDetail}"></h5>
+                            <div class="row">
+                                <div class="col-sm-6 offset-3">
+                                    <form th:action="@{'/super/updategroup'}" method="post">
+                                        <br>
+                                        <br>
+                                        <input type="hidden" name="id" th:value = "${group.id}">
+                                        <label th:text = "#{label.roleName}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" placeholder="Наименование роли" name="group_name" th:value="${group.name}">
+                                        </div>
+                                        <label th:text = "#{label.roleDescription}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" class="form-control" placeholder="Описание роли" name="group_description" th:value="${group.description}">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-4 offset-8">
+                                                <button type="submit" class="btn btn-primary btn-block btn-flat float-right" th:text = "#{label.update}"></button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                    </form>
+                                    <br>
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+                            <h5 class="card-title" th:text = "#{label.additionalRoleSettings}"></h5>
+                            <br>
+                            <br>
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <form th:action="@{'/super/removegrouprole'}" method="post" id = "removeGroupRoleId">
+                                        <input type="hidden" name="group_id" th:value = "${group.id}">
+                                        <label th:text = "#{label.accessLevels}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <select multiple class="form-control" style="width: 100%; min-height: 200px;" name="role_id" id = "removeRoleId">
+                                                <option th:each="role: ${group.roles}" th:text = "${role.description}" th:value = "${role.id}"></option>
+                                            </select>
+                                        </div>
+                                        <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                    </form>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="row mt-5 pt-5">
+                                        <div class="col-sm-12">
+                                            <button class="btn btn-danger btn-sm btn-block btn-flat" style="width: 100%;" onclick="removeGroupRole()" th:text = "#{label.delete}" >></button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-1">
+                                        <div class="col-sm-12">
+                                            <button class="btn btn-success btn-sm btn-block btn-flat" style="width: 100%;" onclick="addGroupRole()" th:text = "#{label.add}"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <form th:action="@{'/super/addgrouprole'}" method="post" id = "addGroupRoleId">
+                                        <input type="hidden" name="group_id" th:value = "${group.id}">
+                                        <label th:text = "#{label.possibleAccessLevels}">
+                                        </label>
+                                        <div class="input-group mb-3">
+                                            <select multiple class="form-control" style="width: 100%; min-height: 200px;" name="role_id" id = "addRoleId">
+                                                <option th:each="role: ${availableRoles}" th:text = "${role.description}" th:value = "${role.id}"></option>
+                                            </select>
+                                        </div>
+                                        <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                    </form>
+                                </div>
+                                <script type="text/javascript">
+                                    function addGroupRole(){
+                                        if(document.getElementById("addRoleId").value!=""){
+                                            document.getElementById("addGroupRoleId").submit();
+                                        }
+                                    }
+                                    function removeGroupRole(){
+                                        if(document.getElementById("removeRoleId").value!="") {
+                                            document.getElementById("removeGroupRoleId").submit();
+                                        }
+                                    }
+                                </script>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-sm-2 offset-10">
+                                    <form th:action="@{'/super/deletegroup'}" method="post" id = "deleteGroupId">
+                                        <input type="hidden" name="@{_csrf.parameterName}" value="@{_csrf.token}"/>
+                                        <input type="hidden" name="group_id" th:value = "${group.id}">
+                                        <button type="button" class="btn btn-danger btn-sm float-right btn-block btn-flat" onclick="deleteGroup()" th:text = "#{label.removeRole}"></button>
+                                    </form>
+                                </div>
+                                <script type="text/javascript">
+                                    function deleteGroup() {
+                                        if(confirm("Вы уверены?")){
+                                            document.getElementById("deleteGroupId").submit();
+                                        }
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
