@@ -17,8 +17,6 @@
             </li>
         </ul>
 
-
-
         <section class="section">
             <div class="section-header">
                 <a href="#" class="btn back">Назад</a>
@@ -61,69 +59,30 @@
                     </div>
                     <form action="#" method="POST">
                         <div class="input-group">
-                            <label for="trip-desc">Характер поездки</label>
-                            <input type="text" placeholder="Введите данные" id="trip-desc" />
+                            <label for="tripCharacterFieldId">Характер поездки</label>
+                            <input type="text" readonly id="tripCharacterFieldId"
+                                   th:value="${businessTrip.tripCharacter}" name="trip_character"/>
                         </div>
                         <div class="input-group" id="trip-purposes">
-                            <label for="trip-purpose">Цель визита</label>
-                            <input type="text" placeholder="Введите данные" name="trip-purposes" id="trip-purpose" />
+                            <label>Цель визита</label>
+                            <input th:each="purpose : ${businessTrip.businessTripPurposes}" type="text"
+                                   readonly name="trip_purpose"
+                                   th:value="${purpose.purpose}">
                         </div>
-                        <button
-                                type="button"
-                                class="btn plus mt-negative"
-                                data-push
-                                data-push-input="true"
-                                data-push-input-type="text"
-                                data-push-name="trip-purposes"
-                                data-push-placeholder="Введите данные"
-                                data-push-to-id="trip-purposes"
-                        >
-                            Добавить поле
-                        </button>
                         <div class="input-group">
-                            <label for="osnovaniye">Основание</label>
-                            <input type="text" placeholder="Введите данные" id="osnovaniye" />
-                        </div>
-                        <div class="input-group" id="routes">
-                            <label for="route">Маршрут</label>
-                            <input type="text" placeholder="Введите маршрут" name="routes" id="route" />
-                        </div>
-                        <button
-                                type="button"
-                                class="btn plus mt-negative"
-                                data-push
-                                data-push-input="true"
-                                data-push-input-type="text"
-                                data-push-name="routes"
-                                data-push-placeholder="Введите маршрут"
-                                data-push-to-id="routes"
-                        >
-                            Добавить маршрут
-                        </button>
-                        <div class="input-group" id="cities">
-                            <label for="city">Города посещения</label>
-                            <input type="text" placeholder="Введите данные" name="cities" id="city" />
-                        </div>
-                        <button
-                                type="button"
-                                class="btn plus mt-negative"
-                                data-push
-                                data-push-input="true"
-                                data-push-input-type="text"
-                                data-push-name="cities"
-                                data-push-placeholder="Введите данные"
-                                data-push-to-id="cities"
-                        >
-                            Добавить город
-                        </button>
-                        <div class="input-group-checkbox">
-                            <input type="checkbox" id="president" />
-                            <label for="president">Официальная поездка делигации во главе президента</label>
+                            <label for="tripProofFieldId">Основание</label>
+                            <input readonly type="text" class="form-control bg-light" id="tripProofFieldId"
+                                   th:value="${businessTrip.businessTripProof}" name="trip_proof"
+                                   placeholder="Основание" />
                         </div>
                     </form>
                 </div>
                 <div class="section-body-container bottom-border">
                     <form action="#" method="POST">
+                        <div class="input-group" id="routes">
+                            <label for="route">Маршрут</label>
+                            <input type="text" placeholder="Введите маршрут" name="routes" id="route" />
+                        </div>
                         <div class="input-group-multiple">
                             <div class="input-group-multiple-title">Даты</div>
                             <div class="input-group-multiple-list">
@@ -139,7 +98,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="input-group-multiple">
                             <div class="input-group-multiple-title">Время</div>
                             <div class="input-group-multiple-list">
@@ -149,9 +107,17 @@
                                 </div>
                                 <div class="input-group-multiple-item">
                                     <label for="time2">Маршрут 2</label>
-                                    <input type="time" name="time2" id="date2" />
+                                    <input type="time" name="time2" id="time2" />
                                 </div>
                             </div>
+                        </div>
+                        <div class="input-group" id="cities">
+                            <label for="city">Города посещения</label>
+                            <input type="text" placeholder="Введите данные" name="cities" id="city" />
+                        </div>
+                        <div class="input-group-checkbox">
+                            <input type="checkbox" id="president" />
+                            <label for="president">Официальная поездка делигации во главе президента</label>
                         </div>
 
                         <div class="input-group">
@@ -640,22 +606,22 @@
                             <div class="col-sm-3">
                                 <label class="mt-1">Характер поездки</label>
                             </div>
-                            <div class="col-sm-8">
-                                <input type="text" readonly class="form-control bg-light"
-                                       id="tripCharacterFieldId"
-                                       th:value="${businessTrip.tripCharacter}" name="trip_character"
-                                       placeholder="Характер поездки">
-                            </div>
+                            <!--                            <div class="col-sm-8">-->
+                            <!--                                <input type="text" readonly class="form-control bg-light"-->
+                            <!--                                       id="tripCharacterFieldId"-->
+                            <!--                                       th:value="${businessTrip.tripCharacter}" name="trip_character"-->
+                            <!--                                       placeholder="Характер поездки">-->
+                            <!--                            </div>-->
                         </div>
                         <div class="row mt-3">
                             <div class="col-sm-3">
                                 <label class="mt-1">Цель визита</label>
                             </div>
                             <div class="col-sm-8">
-                                <input th:each="purpose : ${businessTrip.businessTripPurposes}" type="text"
-                                       readonly
-                                       class="form-control bg-light" name="trip_purpose"
-                                       th:value="${purpose.purpose}">
+                                <!--                                <input th:each="purpose : ${businessTrip.businessTripPurposes}" type="text"-->
+                                <!--                                       readonly-->
+                                <!--                                       class="form-control bg-light" name="trip_purpose"-->
+                                <!--                                       th:value="${purpose.purpose}">-->
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -663,9 +629,9 @@
                                 <label class="mt-1">Основание</label>
                             </div>
                             <div class="col-sm-8">
-                                <input readonly type="text" class="form-control bg-light" id="tripProofFieldId"
-                                       th:value="${businessTrip.businessTripProof}" name="trip_proof"
-                                       placeholder="Основание">
+                                <!--                                <input readonly type="text" class="form-control bg-light" id="tripProofFieldId"-->
+                                <!--                                       th:value="${businessTrip.businessTripProof}" name="trip_proof"-->
+                                <!--                                       placeholder="Основание">-->
                             </div>
                         </div>
                         <div class="row mt-3">

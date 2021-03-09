@@ -2,121 +2,121 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorator="layouts/main.html">
-    <div layout:fragment="content">
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h3 class="m-0 text-dark"><small th:text="#{label.createProcess}"></small></h3>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a th:href="@{'/'}" th:text="#{label.mainPage}"></a></li>
-                            <li class="breadcrumb-item active" th:text="#{label.createProcess}"></li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="content" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_UBP_MID','ROLE_RUKOVODITEL_VFD',
+<div layout:fragment="content">
+    <!--        <div class="content-header">-->
+    <!--            <div class="container-fluid">-->
+    <!--                <div class="row mb-2">-->
+    <!--                    <div class="col-sm-6">-->
+    <!--                        <h3 class="m-0 text-dark"><small th:text="#{label.createProcess}"></small></h3>-->
+    <!--                    </div>-->
+    <!--                    <div class="col-sm-6">-->
+    <!--                        <ol class="breadcrumb float-sm-right">-->
+    <!--                            <li class="breadcrumb-item"><a th:href="@{'/'}" th:text="#{label.mainPage}"></a></li>-->
+    <!--                            <li class="breadcrumb-item active" th:text="#{label.createProcess}"></li>-->
+    <!--                        </ol>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <div class="content" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_UBP_MID','ROLE_RUKOVODITEL_VFD',
         'ROLE_OTVESTVENNIY_SEKRETAR_MID', 'ROLE_OTVESTVENNIY_SEKRETAR_GO', 'ROLE_RUKOVODITEL_GO', 'ROLE_ZAYAVITEL',
         'ROLE_RUKOVODITEL_POLIT_DEP_MID', 'ROLE_ISPOLNITEL_POLIT_DEP_MID', 'ROLE_RUKOVODITEL_DKS_MID', 'ROLE_ISPOLNITEL_DKS_MID', 'ROLE_ISPOLNITEL_VFD')" >
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><span th:text = "${user.lastName}"></span></h5>
-                                <h5><span th:text = "${user.firstName}"></span></h5>
-                                <h5><span th:text = "${user.middleName}"></span></h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_UBP_MID')">
-                                    <a th:href = "@{'/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_RUKOVODITEL_VFD')">
-                                    <a th:href = "@{'/supervisorvfd/advanceaccounts'}" class="btn btn-flat btn-primary" style="width: 100%; ">Авансовые счета</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_OTVESTVENNIY_SEKRETAR_MID')">
-                                    <a th:href = "@{'/secretary/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/secretary/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/secretary/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_OTVESTVENNIY_SEKRETAR_GO')">
-                                    <a th:href = "@{'/secretarygo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/secretarygo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/secretarygo/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_RUKOVODITEL_GO')">
-                                    <a th:href = "@{'/supervisorgo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/supervisorgo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/supervisorgo/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ZAYAVITEL')">
-                                    <a th:href = "@{'/zayavitelgo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/zayavitelgo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/zayavitelgo/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_RUKOVODITEL_POLIT_DEP_MID')">
-                                    <a th:href = "@{'/supervisorpolitical/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/supervisorpolitical/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_POLIT_DEP_MID')">
-                                    <a th:href = "@{'/executorpolitical/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/executorpolitical/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_RUKOVODITEL_DKS_MID')">
-                                    <a th:href = "@{'/supervisordks/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/supervisordks/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/supervisordks/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_DKS_MID')">
-                                    <a th:href = "@{'/executordks/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/executordks/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>
-                                    <br>
-                                    <br>
-                                    <a th:href = "@{'/executordks/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>
-                                </p>
-                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_VFD')">
-                                    <a th:href = "@{'/executorvfd/advanceaccounts'}" class="btn btn-flat btn-primary" style="width: 100%; ">Авансовые счета</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-9">
+        <!--            <div class="container-fluid">-->
+        <!--                <div class="row">-->
+        <!--                    <div class="col-sm-3">-->
+        <!--                        <div class="card">-->
+        <!--                            <div class="card-header">-->
+        <!--                                <h5><span th:text = "${user.lastName}"></span></h5>-->
+        <!--                                <h5><span th:text = "${user.firstName}"></span></h5>-->
+        <!--                                <h5><span th:text = "${user.middleName}"></span></h5>-->
+        <!--                            </div>-->
+        <!--                            <div class="card-body">-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_UBP_MID')">-->
+        <!--                                    <a th:href = "@{'/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_RUKOVODITEL_VFD')">-->
+        <!--                                    <a th:href = "@{'/supervisorvfd/advanceaccounts'}" class="btn btn-flat btn-primary" style="width: 100%; ">Авансовые счета</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_OTVESTVENNIY_SEKRETAR_MID')">-->
+        <!--                                    <a th:href = "@{'/secretary/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/secretary/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/secretary/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_OTVESTVENNIY_SEKRETAR_GO')">-->
+        <!--                                    <a th:href = "@{'/secretarygo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/secretarygo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/secretarygo/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_RUKOVODITEL_GO')">-->
+        <!--                                    <a th:href = "@{'/supervisorgo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%;">План мероприятий</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/supervisorgo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%;">Оформление на командировку</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/supervisorgo/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ZAYAVITEL')">-->
+        <!--                                    <a th:href = "@{'/zayavitelgo/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/zayavitelgo/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/zayavitelgo/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_RUKOVODITEL_POLIT_DEP_MID')">-->
+        <!--                                    <a th:href = "@{'/supervisorpolitical/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/supervisorpolitical/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_POLIT_DEP_MID')">-->
+        <!--                                    <a th:href = "@{'/executorpolitical/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/executorpolitical/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_RUKOVODITEL_DKS_MID')">-->
+        <!--                                    <a th:href = "@{'/supervisordks/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/supervisordks/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/supervisordks/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_DKS_MID')">-->
+        <!--                                    <a th:href = "@{'/executordks/processlist'}" class="btn btn-flat btn-primary" style="width: 100%; ">План мероприятий</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/executordks/businesstrips'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление на командировку</a>-->
+        <!--                                    <br>-->
+        <!--                                    <br>-->
+        <!--                                    <a th:href = "@{'/executordks/passports'}" class="btn btn-flat btn-primary" style="width: 100%; ">Оформление паспорта</a>-->
+        <!--                                </p>-->
+        <!--                                <p class="card-text mt-3" sec:authorize="hasAnyRole('ROLE_ISPOLNITEL_VFD')">-->
+        <!--                                    <a th:href = "@{'/executorvfd/advanceaccounts'}" class="btn btn-flat btn-primary" style="width: 100%; ">Авансовые счета</a>-->
+        <!--                                </p>-->
+        <!--                            </div>-->
+        <!--                        </div>-->
+        <!--                    </div>-->
+        <!--                    <div class="col-sm-9">-->
 
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
     </div>
+</div>
 </html>
